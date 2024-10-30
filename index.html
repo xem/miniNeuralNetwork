@@ -3,7 +3,7 @@
 // Create matrix
 // - filled with random numbers by default
 // - filled with zero if z = 1
-M=(N,o,l)=>Array(N).fill().map(()=>Array(o).fill(l?0:Math.random()));
+M=(r,c,z)=>Array(r).fill().map(()=>Array(c).fill(z?0:Math.random()*2-1));
 
 // Operations on matrices
 // o == 0: addition (a+=b)
@@ -16,8 +16,8 @@ M=(N,o,l)=>Array(N).fill().map(()=>Array(o).fill(l?0:Math.random()));
 O = (a, b, o, r, i, j, k, l = "length") => {
   if(o == 5) r = M(a[0][l], a[l], 1);
   if(o == 6) r = M(a[l], b[0][l], 1);
-  for(i = 0; i < a[l]; i++){
-    for(j = 0; j < a[0][l]; j++){
+  for(i = a[l]; i--;){
+    for(j = a[0][l]; j--;){
       if(o == 0) a[i][j] += b[i][j];
       if(o == 1) a[i][j] -= b[i][j];
       if(o == 2) a[i][j] *= b[i][j];
@@ -25,7 +25,7 @@ O = (a, b, o, r, i, j, k, l = "length") => {
       if(o == 4) a[i][j] = b(a[i][j]);
       if(o == 5) r[j][i] = a[i][j];
       if(o == 6){
-        for(k = 0; k < b[0][l]; k++){
+        for(k = b[0][l]; k--;){
           r[i][k] += a[i][j] * b[j][k];
         }
       }
@@ -47,7 +47,7 @@ N = {
   // - f: activation function (default: sigmoid)
   // - g: gradient descent function (default: y*(1-y))
   
-  i: (i, h, o, l = 0.1, f = (x => 1 / (1 + Math.exp(-x))), g = (y => y * (1 - y))) => {
+  i: (i, h, o, l = 0.3, f = (x => 1 / (1 + Math.exp(-x))), g = (y => y * (1 - y))) => {
     N.l = l;
     N.f = f;
     N.g = g;
@@ -116,6 +116,7 @@ N = {
 // Columnize an array ([a,b] => [[a],[b]])
 C = a => a.map(z=>[z]);
 
+// Demo
 N.i(2,3,1);
 
 console.log("Before training...");
@@ -132,7 +133,7 @@ training_data = [
 ];
 
 // several training epochs
-for(i = 0; i < 10000; i++){
+for(i = 0; i < 50000; i++){
   tdata = training_data[Math.floor(Math.random() * training_data.length)];
   N.p(C(tdata[0]), C(tdata[1]));
 }
