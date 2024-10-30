@@ -6,72 +6,32 @@
 M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random()));
 
 // Matrix dot product
-D = (A, B) => {
-  return A.map((row, i) =>
-    B[0].map((_, j) =>
+D = (a, b) => {
+  return a.map((row, i) =>
+    b[0].map((_, j) =>
       row.reduce((acc, _, n) =>
-        acc + A[i][n] * B[n][j], 0
+        acc + a[i][n] * b[n][j], 0
       )
     )
   )
 };
 
-// Columnize an array ([a,b] => [[a],[b]]
-C = (a,r) => {
-  r = [];
-  a.map(z=>r.push([z]));
-  return r;
-};
-
-// Add matrices (a += b)
-A = (a, b, i, j) => {
+// Term by term operations on two matrices
+// o == 0: addition (a+=b)
+// o == 1: subtraction (a-=b)
+// o == 2: product (a*=b)
+// o == 3: scale (a*=b, b is a scalar)
+// o == 4: map (a=b(a), b is a function
+O = (a, b, o, r, i, j) => {
   for(i = 0; i < a.length; i++){
     for(j = 0; j < a[0].length; j++){
-      a[i][j] += b[i][j];
+      if(o == 0) a[i][j] += b[i][j];
+      if(o == 1) a[i][j] -= b[i][j];
+      if(o == 2) a[i][j] *= b[i][j];
+      if(o == 3) a[i][j] *= b;
+      if(o == 4) a[i][j] = b(a[i][j]);
     }
   }
-}
-
-// Subtract matrices (r = a - b)
-S = (a, b, r, i, j) => {
-  r = M(a.length, a[0].length, 1);
-  for(i = 0; i < a.length; i++){
-    for(j = 0; j < a[0].length; j++){
-      r[i][j] = a[i][j] - b[i][j];
-    }
-  }
-  return r;
-}
-
-// Product of two matrices (r = a * b, term by term)
-P = (a, b, r, i, j) => {
-  r = M(a.length, a[0].length, 1);
-  for(i = 0; i < a.length; i++){
-    for(j = 0; j < a[0].length; j++){
-      r[i][j] = a[i][j] * b[i][j];
-    }
-  }
-  return r;
-}
-
-// Map a function to a matrix
-F = (a, f, i, j) => {
-  for(i = 0; i < a.length; i++){
-    for(j = 0; j < a[0].length; j++){
-      a[i][j] = f(a[i][j]);
-    }
-  }
-}
-
-// Resize a matrix (r = a * s)
-R = (a, s, r, i, j) => {
-  r = M(a.length, a[0].length, 1);
-  for(i = 0; i < a.length; i++){
-    for(j = 0; j < a[0].length; j++){
-      r[i][j] = s * a[i][j];
-    }
-  }
-  return r;
 }
 
 // Transpose a matrix
@@ -104,69 +64,74 @@ N = {
     N.g = g;
 
     // Generate random weights from input to hidden, and from hidden to output
-    N.wih = M(h, i); 
-    N.who = M(o, h);
+    N.w = M(h, i); 
+    N.W = M(o, h);
 
     // Generate random bias for hidden and output
-    N.bh = M(h, 1);
-    N.bo = M(o, 1);
+    N.b = M(h, 1);
+    N.B = M(o, 1);
   },
 
   // Passthrough function
-  // Used for both training and querying the network
+  // Used for Bth training and querying the network
   
   // Params: 
   // - input: input nodes
   // - target: desired output (for training) / undefined (for querying)
-  p: (input, target, i, h, o, oe, og, hg) => {
-  
+  p: (input, target, i, h, o) => {
+    
     // Generate hidden nodes's outputs
-    i = C(input);
-    h = D(N.wih, i);
-    A(h, N.bh);
+    i = input;
+    h = D(N.w, i);
+    O(h, N.b, 0);
     
     // activation function
-    F(h, N.f);
+    O(h, N.f, 4);
 
     // Generating output nodes's output
-    o = D(N.who, h);
-    A(o, N.bo);
-    F(o, N.f);
+    o = D(N.W, h);
+    O(o, N.B, 0);
+    O(o, N.f, 4);
     
     if(!target) return o;
 
     // Calculate the output nodes error (target - output)
-    oe = S(C(target), o);
+    O(target, o, 1);
 
     // Calculate output nodes gradient
-    F(o, N.g);
-    og = R(P(o, oe), N.l);
+    O(o, N.g, 4);
+    O(o, target, 2)
+    O(o, N.l, 3);
 
     // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
-    A(N.who, D(og, T(h)));
+    O(N.W, D(o, T(h)), 0);
     
     // Adjust bias with gradients
-    A(N.bo, og); 
+    O(N.B, o, 0); 
 
     // Calculate hidden gradient, apply the hidden layer errors (Td hidden to output weights x output nodes errors)
-    F(h, N.g);
-    hg = R(P(h, D(T(N.who), oe)), N.l);
+    O(h, N.g, 4);
+    O(h, D(T(N.W), target), 2);
+    O(h, N.l, 3);
 
     // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
-    A(N.wih, D(hg, T(i)));
+    O(N.w, D(h, T(i)), 0);
     
     // Adjust the bias with gradients
-    A(N.bh,hg);
+    O(N.b, h, 0);
   }
 }
+
+// Columnize an array ([a,b] => [[a],[b]]
+C = a => a.map(z=>[z]);
 
 N.i(2,3,1);
 
 console.log("Before training...");
-console.log('0 AND 0',N.p([0,0])[0]);
-console.log('0 AND 1',N.p([0,1])[0]);
-console.log('1 AND 0',N.p([1,0])[0]);
-console.log('1 AND 1',N.p([1,1])[0]);
+console.log('0 AND 0',N.p(C([0,0]))[0]);
+console.log('0 AND 1',N.p(C([0,1]))[0]);
+console.log('1 AND 0',N.p(C([1,0]))[0]);
+console.log('1 AND 1',N.p(C([1,1]))[0]);
 
 training_data = [
   [[1,1], [1]],
@@ -178,14 +143,14 @@ training_data = [
 // several training epochs
 for(i = 0; i < 10000; i++){
   tdata = training_data[Math.floor(Math.random() * training_data.length)];
-  N.p(tdata[0], tdata[1]);
+  N.p(C(tdata[0]), C(tdata[1]));
 }
 
 console.log("After training...");
-console.log('0 AND 0',N.p([0,0])[0]);
-console.log('0 AND 1',N.p([0,1])[0]);
-console.log('1 AND 0',N.p([1,0])[0]);
-console.log('1 AND 1',N.p([1,1])[0]);
+console.log('0 AND 0',N.p(C([0,0]))[0]);
+console.log('0 AND 1',N.p(C([0,1]))[0]);
+console.log('1 AND 0',N.p(C([1,0]))[0]);
+console.log('1 AND 1',N.p(C([1,1]))[0]);
 
 
 </script>
