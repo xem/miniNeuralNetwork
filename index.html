@@ -3,9 +3,9 @@
 // Create matrix
 // - filled with random numbers by default
 // - filled with zero if z = 1
-M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random()));
+M=(N,o,l)=>Array(N).fill().map(()=>Array(o).fill(l?0:Math.random()));
 
-// Term by term operations on two matrices
+// Operations on matrices
 // o == 0: addition (a+=b)
 // o == 1: subtraction (a-=b)
 // o == 2: product (a*=b)
