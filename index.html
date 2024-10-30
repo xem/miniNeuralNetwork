@@ -1,126 +1,8 @@
 ﻿<script>
+M=(N,o,l)=>Array(N).fill().map((()=>Array(o).fill(l?0:Math.random()))),O=(N,o,l,a,n,O,t,r="length")=>{for(5==l&&(a=M(N[0][r],N[r],1)),6==l&&(a=M(N[r],o[0][r],1)),n=0;n<N[r];n++)for(O=0;O<N[0][r];O++)if(0==l&&(N[n][O]+=o[n][O]),1==l&&(N[n][O]-=o[n][O]),2==l&&(N[n][O]*=o[n][O]),3==l&&(N[n][O]*=o),4==l&&(N[n][O]=o(N[n][O])),5==l&&(a[O][n]=N[n][O]),6==l)for(t=0;t<o[0][r];t++)a[n][t]+=N[n][O]*o[O][t];return a},N={i:(o,l,a,n=.1,O=N=>1/(1+Math.exp(-N)),t=N=>N*(1-N))=>{N.l=n,N.f=O,N.g=t,N.w=M(l,o),N.W=M(a,l),N.b=M(l,1),N.B=M(a,1)},p:(o,l,a,n,t)=>{if(a=o,n=O(N.w,a,6),O(n,N.b,0),O(n,N.f,4),t=O(N.W,n,6),O(t,N.B,0),O(t,N.f,4),!l)return t;O(l,t,1),O(t,N.g,4),O(t,l,2),O(t,N.l,3),O(N.W,O(t,O(n,0,5),6),0),O(N.B,t,0),O(n,N.g,4),O(n,O(O(N.W,0,5),l,6),2),O(n,N.l,3),O(N.w,O(n,O(a,0,5),6),0),O(N.b,n,0)}};
 
-// Create matrix
-// - filled with random numbers by default
-// - filled with zero if z = 1
-M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random()));
 
-// Matrix dot product
-D = (a, b) => {
-  return a.map((row, i) =>
-    b[0].map((_, j) =>
-      row.reduce((acc, _, n) =>
-        acc + a[i][n] * b[n][j], 0
-      )
-    )
-  )
-};
 
-// Term by term operations on two matrices
-// o == 0: addition (a+=b)
-// o == 1: subtraction (a-=b)
-// o == 2: product (a*=b)
-// o == 3: scale (a*=b, b is a scalar)
-// o == 4: map (a=b(a), b is a function
-O = (a, b, o, r, i, j) => {
-  for(i = 0; i < a.length; i++){
-    for(j = 0; j < a[0].length; j++){
-      if(o == 0) a[i][j] += b[i][j];
-      if(o == 1) a[i][j] -= b[i][j];
-      if(o == 2) a[i][j] *= b[i][j];
-      if(o == 3) a[i][j] *= b;
-      if(o == 4) a[i][j] = b(a[i][j]);
-    }
-  }
-}
-
-// Transpose a matrix
-T = (a, r, i, j) => {
-  r = M(a[0].length, a.length, 1);
-  for(i = 0; i < a.length; i++){
-    for(j = 0; j < a[0].length; j++){
-      r[j][i] = a[i][j];
-    }
-  }
-  return r;
-}
-
-// Mini Neural Network
-N = {
-
-  // Init
-  
-  // Params:
-  // - i: input nodes
-  // - h: hidden nodes
-  // - o: output nodes
-  // - l: learning rate
-  // - f: activation function (default: sigmoid)
-  // - g: gradient descent function (default: y*(1-y))
-  
-  i: (i, h, o, l = 0.1, f = (x => 1 / (1 + Math.exp(-x))), g = (y => y * (1 - y))) => {
-    N.l = l;
-    N.f = f;
-    N.g = g;
-
-    // Generate random weights from input to hidden, and from hidden to output
-    N.w = M(h, i); 
-    N.W = M(o, h);
-
-    // Generate random bias for hidden and output
-    N.b = M(h, 1);
-    N.B = M(o, 1);
-  },
-
-  // Passthrough function
-  // Used for Bth training and querying the network
-  
-  // Params: 
-  // - input: input nodes
-  // - target: desired output (for training) / undefined (for querying)
-  p: (input, target, i, h, o) => {
-    
-    // Generate hidden nodes's outputs
-    i = input;
-    h = D(N.w, i);
-    O(h, N.b, 0);
-    
-    // activation function
-    O(h, N.f, 4);
-
-    // Generating output nodes's output
-    o = D(N.W, h);
-    O(o, N.B, 0);
-    O(o, N.f, 4);
-    
-    if(!target) return o;
-
-    // Calculate the output nodes error (target - output)
-    O(target, o, 1);
-
-    // Calculate output nodes gradient
-    O(o, N.g, 4);
-    O(o, target, 2)
-    O(o, N.l, 3);
-
-    // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
-    O(N.W, D(o, T(h)), 0);
-    
-    // Adjust bias with gradients
-    O(N.B, o, 0); 
-
-    // Calculate hidden gradient, apply the hidden layer errors (Td hidden to output weights x output nodes errors)
-    O(h, N.g, 4);
-    O(h, D(T(N.W), target), 2);
-    O(h, N.l, 3);
-
-    // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
-    O(N.w, D(h, T(i)), 0);
-    
-    // Adjust the bias with gradients
-    O(N.b, h, 0);
-  }
-}
 
 // Columnize an array ([a,b] => [[a],[b]]
 C = a => a.map(z=>[z]);
@@ -128,10 +10,10 @@ C = a => a.map(z=>[z]);
 N.i(2,3,1);
 
 console.log("Before training...");
-console.log('0 AND 0',N.p(C([0,0]))[0]);
-console.log('0 AND 1',N.p(C([0,1]))[0]);
-console.log('1 AND 0',N.p(C([1,0]))[0]);
-console.log('1 AND 1',N.p(C([1,1]))[0]);
+console.log('0 AND 0',N.p(C([0,0]))[0][0]);
+console.log('0 AND 1',N.p(C([0,1]))[0][0]);
+console.log('1 AND 0',N.p(C([1,0]))[0][0]);
+console.log('1 AND 1',N.p(C([1,1]))[0][0]);
 
 training_data = [
   [[1,1], [1]],
@@ -147,10 +29,10 @@ for(i = 0; i < 10000; i++){
 }
 
 console.log("After training...");
-console.log('0 AND 0',N.p(C([0,0]))[0]);
-console.log('0 AND 1',N.p(C([0,1]))[0]);
-console.log('1 AND 0',N.p(C([1,0]))[0]);
-console.log('1 AND 1',N.p(C([1,1]))[0]);
+console.log('0 AND 0',N.p(C([0,0]))[0][0]);
+console.log('0 AND 1',N.p(C([0,1]))[0][0]);
+console.log('1 AND 0',N.p(C([1,0]))[0][0]);
+console.log('1 AND 1',N.p(C([1,1]))[0][0]);
 
 
 </script>
