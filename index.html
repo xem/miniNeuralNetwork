@@ -3,68 +3,86 @@
 // Create matrix
 // - filled with random numbers by default
 // - filled with zero if z = 1
-M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() * 2 - 1));
+M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random()));
 
+// Matrix dot product
+D = (A, B) => {
+  return A.map((row, i) =>
+    B[0].map((_, j) =>
+      row.reduce((acc, _, n) =>
+        acc + A[i][n] * B[n][j], 0
+      )
+    )
+  )
+};
 
-class Matrix {
-  constructor(r, c) {
-    this.data = Array(r).fill().map(() => Array(c).fill(Math.random() * 2 - 1));
-  }
+// Columnize an array ([a,b] => [[a],[b]]
+C = (a,r) => {
+  r = [];
+  a.map(z=>r.push([z]));
+  return r;
+};
 
-  static fromArray(arr) {
-    return new Matrix(arr.length, 1).map((e, i) => arr[i]);
-  }
-
-  static S(a, b) {
-    return new Matrix(a.data.length, a.data[0].length)
-      .map((_, i, j) => a.data[i][j] - b.data[i][j]);
-  }
-
-  A(n) {
-    return this.map((e, i, j) => e + n.data[i][j]);
-  }
-
-  static T(matrix) {
-    return new Matrix(matrix.data[0].length, matrix.data.length)
-      .map((_, i, j) => matrix.data[j][i]);
-  }
-
-  static D(a, b) {
-    return new Matrix(a.data.length, b.data[0].length)
-      .map((e, i, j, k, sum) => {
-        // Dot product of values in col
-        sum = 0;
-        for(k = 0; k < a.data[0].length; k++) {
-          sum += a.data[i][k] * b.data[k][j];
-        }
-        return sum;
-      });
-  }
-
-  P(n) {
-    return this.map((e, i, j) => e * n.data[i][j]);
-  }
-  
-  S(n) {
-    return this.map(e => e * n);
-  }
-
-  map(func, i, j, val) {
-    // Apply a function to every element of matrix
-    for(i = 0; i < this.data.length; i++) {
-      for(j = 0; j < this.data[0].length; j++) {
-        val = this.data[i][j];
-        this.data[i][j] = func(val, i, j);
-      }
+// Add matrices (a += b)
+A = (a, b, i, j) => {
+  for(i = 0; i < a.length; i++){
+    for(j = 0; j < a[0].length; j++){
+      a[i][j] += b[i][j];
     }
-    return this;
   }
+}
 
-  static map(matrix, func) {
-    // Apply a function to every element of matrix
-    return new Matrix(matrix.data.length, matrix.data[0].length)
-      .map((e, i, j) => func(matrix.data[i][j], i, j));
+// Subtract matrices (r = a - b)
+S = (a, b, r, i, j) => {
+  r = M(a.length, a[0].length, 1);
+  for(i = 0; i < a.length; i++){
+    for(j = 0; j < a[0].length; j++){
+      r[i][j] = a[i][j] - b[i][j];
+    }
   }
+  return r;
+}
+
+// Product of two matrices (r = a * b, term by term)
+P = (a, b, r, i, j) => {
+  r = M(a.length, a[0].length, 1);
+  for(i = 0; i < a.length; i++){
+    for(j = 0; j < a[0].length; j++){
+      r[i][j] = a[i][j] * b[i][j];
+    }
+  }
+  return r;
+}
+
+// Map a function to a matrix
+F = (a, f, i, j) => {
+  for(i = 0; i < a.length; i++){
+    for(j = 0; j < a[0].length; j++){
+      a[i][j] = f(a[i][j]);
+    }
+  }
+}
+
+// Resize a matrix (r = a * s)
+R = (a, s, r, i, j) => {
+  r = M(a.length, a[0].length, 1);
+  for(i = 0; i < a.length; i++){
+    for(j = 0; j < a[0].length; j++){
+      r[i][j] = s * a[i][j];
+    }
+  }
+  return r;
+}
+
+// Transpose a matrix
+T = (a, r, i, j) => {
+  r = M(a[0].length, a.length, 1);
+  for(i = 0; i < a.length; i++){
+    for(j = 0; j < a[0].length; j++){
+      r[j][i] = a[i][j];
+    }
+  }
+  return r;
 }
 
 // Mini Neural Network
@@ -84,71 +102,67 @@ N = {
     N.g = g;
 
     // Generate random weights from input to hidden, and from hidden to output
-    N.wih = new Matrix(h, i);
-    N.who = new Matrix(o, h);
+    N.wih = M(h, i); 
+    N.who = M(o, h);
 
     // Generate random bias for hidden and output
-    N.bh = new Matrix(h, 1);
-    N.bo = new Matrix(o, 1);
+    N.bh = M(h, 1);
+    N.bo = M(o, 1);
   },
 
-  query: (input_array, h, o) => {
+  query: (input, i, h, o) => {
 
-    // Generate hidden nodes outputs
-    h = Matrix.D(N.wih, Matrix.fromArray(input_array));
-    h.A(N.bh);
-    
-    // activation function
-    h.map(N.f);
+    [i, h, o] = N.p(input);
 
-    // Generate output nodes outputs
-    o = Matrix.D(N.who, h);
-    o.A(N.bo);
-    o.map(N.f);
-
-    return o.data;
+    return o;
   },
 
-  train: (input_array, target_array, i, h, o, oe, og, hg) => {
+  train: (input, target, i, h, o, oe, og, hg) => {
   
-    ///// same as query() but i is reused later /////
-    
-    // Generate hidden nodes outputs
-    i = Matrix.fromArray(input_array);
-    h = Matrix.D(N.wih, i);
-    h.A(N.bh);
-    
-    // activation function
-    h.map(N.f);
-
-    // Generating output nodes output
-    o = Matrix.D(N.who, h);
-    o.A(N.bo);
-    o.map(N.f);
-    
-    //////////////////////////////////////////////////
+    [i, h, o] = N.p(input);
 
     // Calculate the output nodes error (target - output)
-    oe = Matrix.S(Matrix.fromArray(target_array), o);
+    oe = S(C(target), o);
 
     // Calculate output nodes gradient
-    og = Matrix.map(o, N.g).P(oe).S(N.l);
+    F(o, N.g);
+    og = R(P(o, oe), N.l);
 
-    // Adjust hidden to output weights with deltas (output gradient x Td hidden nodes)
-    N.who.A(Matrix.D(og, Matrix.T(h)));
+    // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
+    A(N.who, D(og, T(h)));
     
     // Adjust bias with gradients
-    N.bo.A(og);
+    A(N.bo, og); 
 
     // Calculate hidden gradient, apply the hidden layer errors (Td hidden to output weights x output nodes errors)
-    hg = Matrix.map(h, N.g).P(Matrix.D(Matrix.T(N.who), oe)).S(N.l)
+    F(h, N.g);
+    hg = R(P(h, D(T(N.who), oe)), N.l);
 
-    // Adjust input to hidden weights with deltas (hidden gradient x Td input)
-    N.wih.A(Matrix.D(hg, Matrix.T(i)));
+    // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
+    A(N.wih, D(hg, T(i)));
     
     // Adjust the bias with gradients
-    N.bh.A(hg);
+    A(N.bh,hg);
+  },
+  
+  // Pass thtough the network (used in query and train)
+  p: (input, i, h, o) => {
+  
+    // Generate hidden nodes's outputs
+    i = C(input);
+    h = D(N.wih, i);
+    A(h, N.bh);
+    
+    // activation function
+    F(h, N.f);
+
+    // Generating output nodes's output
+    o = D(N.who, h);
+    A(o, N.bo);
+    F(o, N.f);
+    return [i, h, o];
   }
+  
 }
 
 N.init(2,3,1);
