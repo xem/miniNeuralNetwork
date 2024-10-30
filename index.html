@@ -1,92 +1,59 @@
 ﻿<script>
 
+// Create matrix
+// - filled with random numbers by default
+// - filled with zero if z = 1
+M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() * 2 - 1));
+
+
 class Matrix {
-  constructor(rows, cols) {
-    this.rows = rows;
-    this.cols = cols;
-    this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(Math.random() * 2 - 1));
+  constructor(r, c) {
+    this.data = Array(r).fill().map(() => Array(c).fill(Math.random() * 2 - 1));
   }
 
   static fromArray(arr) {
     return new Matrix(arr.length, 1).map((e, i) => arr[i]);
   }
 
-  static subtract(a, b) {
-    if (a.rows !== b.rows || a.cols !== b.cols) {
-      console.log('Columns and Rows of A must match Columns and Rows of B.');
-      return;
-    }
-
-    // Return a new Matrix a-b
-    return new Matrix(a.rows, a.cols)
+  static S(a, b) {
+    return new Matrix(a.data.length, a.data[0].length)
       .map((_, i, j) => a.data[i][j] - b.data[i][j]);
   }
 
-  toArray() {
-    let arr = [];
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.cols; j++) {
-        arr.push(this.data[i][j]);
-      }
-    }
-    return arr;
+  A(n) {
+    return this.map((e, i, j) => e + n.data[i][j]);
   }
 
-  add(n) {
-    if (n instanceof Matrix) {
-      if (this.rows !== n.rows || this.cols !== n.cols) {
-        console.log('Columns and Rows of A must match Columns and Rows of B.');
-        return;
-      }
-      return this.map((e, i, j) => e + n.data[i][j]);
-    } else {
-      return this.map(e => e + n);
-    }
-  }
-
-  static transpose(matrix) {
-    return new Matrix(matrix.cols, matrix.rows)
+  static T(matrix) {
+    return new Matrix(matrix.data[0].length, matrix.data.length)
       .map((_, i, j) => matrix.data[j][i]);
   }
 
-  static multiply(a, b) {
-    // Matrix product
-    if (a.cols !== b.rows) {
-      console.log('Columns of A must match rows of B.');
-      return;
-    }
-
-    return new Matrix(a.rows, b.cols)
-      .map((e, i, j) => {
+  static D(a, b) {
+    return new Matrix(a.data.length, b.data[0].length)
+      .map((e, i, j, k, sum) => {
         // Dot product of values in col
-        let sum = 0;
-        for (let k = 0; k < a.cols; k++) {
+        sum = 0;
+        for(k = 0; k < a.data[0].length; k++) {
           sum += a.data[i][k] * b.data[k][j];
         }
         return sum;
       });
   }
 
-  multiply(n) {
-    if (n instanceof Matrix) {
-      if (this.rows !== n.rows || this.cols !== n.cols) {
-        console.log('Columns and Rows of A must match Columns and Rows of B.');
-        return;
-      }
-
-      // hadamard product
-      return this.map((e, i, j) => e * n.data[i][j]);
-    } else {
-      // Scalar product
-      return this.map(e => e * n);
-    }
+  P(n) {
+    return this.map((e, i, j) => e * n.data[i][j]);
+  }
+  
+  S(n) {
+    return this.map(e => e * n);
   }
 
-  map(func) {
+  map(func, i, j, val) {
     // Apply a function to every element of matrix
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.cols; j++) {
-        let val = this.data[i][j];
+    for(i = 0; i < this.data.length; i++) {
+      for(j = 0; j < this.data[0].length; j++) {
+        val = this.data[i][j];
         this.data[i][j] = func(val, i, j);
       }
     }
@@ -95,13 +62,13 @@ class Matrix {
 
   static map(matrix, func) {
     // Apply a function to every element of matrix
-    return new Matrix(matrix.rows, matrix.cols)
+    return new Matrix(matrix.data.length, matrix.data[0].length)
       .map((e, i, j) => func(matrix.data[i][j], i, j));
   }
 }
 
 // Mini Neural Network
-NN = {
+N = {
 
   // Params:
   // - i: input nodes
@@ -112,34 +79,34 @@ NN = {
   // - g: gradient descent function (default: y*(1-y))
   
   init: (i, h, o, l = 0.1, f = (x => 1 / (1 + Math.exp(-x))), g = (y => y * (1 - y))) => {
-    NN.l = l;
-    NN.f = f;
-    NN.g = g;
+    N.l = l;
+    N.f = f;
+    N.g = g;
 
     // Generate random weights from input to hidden, and from hidden to output
-    NN.wih = new Matrix(h, i);
-    NN.who = new Matrix(o, h);
+    N.wih = new Matrix(h, i);
+    N.who = new Matrix(o, h);
 
     // Generate random bias for hidden and output
-    NN.bh = new Matrix(h, 1);
-    NN.bo = new Matrix(o, 1);
+    N.bh = new Matrix(h, 1);
+    N.bo = new Matrix(o, 1);
   },
 
   query: (input_array, h, o) => {
 
     // Generate hidden nodes outputs
-    h = Matrix.multiply(NN.wih, Matrix.fromArray(input_array));
-    h.add(NN.bh);
+    h = Matrix.D(N.wih, Matrix.fromArray(input_array));
+    h.A(N.bh);
     
     // activation function
-    h.map(NN.f);
+    h.map(N.f);
 
     // Generate output nodes outputs
-    o = Matrix.multiply(NN.who, h);
-    o.add(NN.bo);
-    o.map(NN.f);
+    o = Matrix.D(N.who, h);
+    o.A(N.bo);
+    o.map(N.f);
 
-    return o.toArray();
+    return o.data;
   },
 
   train: (input_array, target_array, i, h, o, oe, og, hg) => {
@@ -148,49 +115,49 @@ NN = {
     
     // Generate hidden nodes outputs
     i = Matrix.fromArray(input_array);
-    h = Matrix.multiply(NN.wih, i);
-    h.add(NN.bh);
+    h = Matrix.D(N.wih, i);
+    h.A(N.bh);
     
     // activation function
-    h.map(NN.f);
+    h.map(N.f);
 
     // Generating output nodes output
-    o = Matrix.multiply(NN.who, h);
-    o.add(NN.bo);
-    o.map(NN.f);
+    o = Matrix.D(N.who, h);
+    o.A(N.bo);
+    o.map(N.f);
     
     //////////////////////////////////////////////////
 
     // Calculate the output nodes error (target - output)
-    oe = Matrix.subtract(Matrix.fromArray(target_array), o);
+    oe = Matrix.S(Matrix.fromArray(target_array), o);
 
     // Calculate output nodes gradient
-    og = Matrix.map(o, NN.g).multiply(oe).multiply(NN.l);
+    og = Matrix.map(o, N.g).P(oe).S(N.l);
 
-    // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
-    NN.who.add(Matrix.multiply(og, Matrix.transpose(h)));
+    // Adjust hidden to output weights with deltas (output gradient x Td hidden nodes)
+    N.who.A(Matrix.D(og, Matrix.T(h)));
     
     // Adjust bias with gradients
-    NN.bo.add(og);
+    N.bo.A(og);
 
-    // Calculate hidden gradient, apply the hidden layer errors (transposed hidden to output weights x output nodes errors)
-    hg = Matrix.map(h, NN.g).multiply(Matrix.multiply(Matrix.transpose(NN.who), oe)).multiply(NN.l)
+    // Calculate hidden gradient, apply the hidden layer errors (Td hidden to output weights x output nodes errors)
+    hg = Matrix.map(h, N.g).P(Matrix.D(Matrix.T(N.who), oe)).S(N.l)
 
-    // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
-    NN.wih.add(Matrix.multiply(hg, Matrix.transpose(i)));
+    // Adjust input to hidden weights with deltas (hidden gradient x Td input)
+    N.wih.A(Matrix.D(hg, Matrix.T(i)));
     
     // Adjust the bias with gradients
-    NN.bh.add(hg);
+    N.bh.A(hg);
   }
 }
 
-NN.init(2,3,1);
+N.init(2,3,1);
 
 console.log("Before training...");
-console.log('0 AND 0',NN.query([0,0]));
-console.log('0 AND 1',NN.query([0,1]));
-console.log('1 AND 0',NN.query([1,0]));
-console.log('1 AND 1',NN.query([1,1]));
+console.log('0 AND 0',N.query([0,0])[0]);
+console.log('0 AND 1',N.query([0,1])[0]);
+console.log('1 AND 0',N.query([1,0])[0]);
+console.log('1 AND 1',N.query([1,1])[0]);
 
 training_data = [
   [[1,1], [1]],
@@ -202,14 +169,14 @@ training_data = [
 // several training epochs
 for(i = 0; i < 10000; i++){
   tdata = training_data[Math.floor(Math.random() * training_data.length)];
-  NN.train(tdata[0], tdata[1]);
+  N.train(tdata[0], tdata[1]);
 }
 
 console.log("After training...");
-console.log('0 AND 0',NN.query([0,0]));
-console.log('0 AND 1',NN.query([0,1]));
-console.log('1 AND 0',NN.query([1,0]));
-console.log('1 AND 1',NN.query([1,1]));
+console.log('0 AND 0',N.query([0,0])[0]);
+console.log('0 AND 1',N.query([0,1])[0]);
+console.log('1 AND 0',N.query([1,0])[0]);
+console.log('1 AND 1',N.query([1,1])[0]);
 
 
 </script>
