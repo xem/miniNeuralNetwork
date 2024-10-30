@@ -88,15 +88,17 @@ T = (a, r, i, j) => {
 // Mini Neural Network
 N = {
 
+  // Init
+  
   // Params:
   // - i: input nodes
   // - h: hidden nodes
   // - o: output nodes
   // - l: learning rate
-  // - f: activation function (default sigmoid)
+  // - f: activation function (default: sigmoid)
   // - g: gradient descent function (default: y*(1-y))
   
-  init: (i, h, o, l = 0.1, f = (x => 1 / (1 + Math.exp(-x))), g = (y => y * (1 - y))) => {
+  i: (i, h, o, l = 0.1, f = (x => 1 / (1 + Math.exp(-x))), g = (y => y * (1 - y))) => {
     N.l = l;
     N.f = f;
     N.g = g;
@@ -110,16 +112,28 @@ N = {
     N.bo = M(o, 1);
   },
 
-  query: (input, i, h, o) => {
-
-    [i, h, o] = N.p(input);
-
-    return o;
-  },
-
-  train: (input, target, i, h, o, oe, og, hg) => {
+  // Passthrough function
+  // Used for both training and querying the network
   
-    [i, h, o] = N.p(input);
+  // Params: 
+  // - input: input nodes
+  // - target: desired output (for training) / undefined (for querying)
+  p: (input, target, i, h, o, oe, og, hg) => {
+  
+    // Generate hidden nodes's outputs
+    i = C(input);
+    h = D(N.wih, i);
+    A(h, N.bh);
+    
+    // activation function
+    F(h, N.f);
+
+    // Generating output nodes's output
+    o = D(N.who, h);
+    A(o, N.bo);
+    F(o, N.f);
+    
+    if(!target) return o;
 
     // Calculate the output nodes error (target - output)
     oe = S(C(target), o);
@@ -143,35 +157,16 @@ N = {
     
     // Adjust the bias with gradients
     A(N.bh,hg);
-  },
-  
-  // Pass thtough the network (used in query and train)
-  p: (input, i, h, o) => {
-  
-    // Generate hidden nodes's outputs
-    i = C(input);
-    h = D(N.wih, i);
-    A(h, N.bh);
-    
-    // activation function
-    F(h, N.f);
-
-    // Generating output nodes's output
-    o = D(N.who, h);
-    A(o, N.bo);
-    F(o, N.f);
-    return [i, h, o];
   }
-  
 }
 
-N.init(2,3,1);
+N.i(2,3,1);
 
 console.log("Before training...");
-console.log('0 AND 0',N.query([0,0])[0]);
-console.log('0 AND 1',N.query([0,1])[0]);
-console.log('1 AND 0',N.query([1,0])[0]);
-console.log('1 AND 1',N.query([1,1])[0]);
+console.log('0 AND 0',N.p([0,0])[0]);
+console.log('0 AND 1',N.p([0,1])[0]);
+console.log('1 AND 0',N.p([1,0])[0]);
+console.log('1 AND 1',N.p([1,1])[0]);
 
 training_data = [
   [[1,1], [1]],
@@ -183,14 +178,14 @@ training_data = [
 // several training epochs
 for(i = 0; i < 10000; i++){
   tdata = training_data[Math.floor(Math.random() * training_data.length)];
-  N.train(tdata[0], tdata[1]);
+  N.p(tdata[0], tdata[1]);
 }
 
 console.log("After training...");
-console.log('0 AND 0',N.query([0,0])[0]);
-console.log('0 AND 1',N.query([0,1])[0]);
-console.log('1 AND 0',N.query([1,0])[0]);
-console.log('1 AND 1',N.query([1,1])[0]);
+console.log('0 AND 0',N.p([0,0])[0]);
+console.log('0 AND 1',N.p([0,1])[0]);
+console.log('1 AND 0',N.p([1,0])[0]);
+console.log('1 AND 1',N.p([1,1])[0]);
 
 
 </script>
