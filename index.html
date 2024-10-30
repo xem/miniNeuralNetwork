@@ -62,7 +62,7 @@ N = {
   },
 
   // Passthrough function
-  // Used for Bth training and querying the network
+  // Used for both training and querying the network
   
   // Params: 
   // - input: input nodes
@@ -82,8 +82,10 @@ N = {
     O(o, N.B, 0);
     O(o, N.f, 4);
     
+    // Query code ends here
     if(!target) return o;
 
+    // Training coninues here:
     // Calculate the output nodes error (target - output)
     O(target, o, 1);
 
@@ -111,7 +113,7 @@ N = {
   }
 }
 
-// Columnize an array ([a,b] => [[a],[b]]
+// Columnize an array ([a,b] => [[a],[b]])
 C = a => a.map(z=>[z]);
 
 N.i(2,3,1);
