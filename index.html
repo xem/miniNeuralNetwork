@@ -19,12 +19,12 @@ O = (a, b, o, r, i, j, k, l = "length") => {
   for(i = a[l]; i--;){
     for(j = a[0][l]; j--;){
       if(
-        o === 6 || (( // dot
+        o > 5 || (( // dot
           a[i][j] = (
-            o === 1 ? a[i][j] - b[i][j] // sub
-            : o === 2 ? a[i][j] * b[i][j] // product
-            : o === 3 ? a[i][j] * b // scale
-            : o === 4 ? b(a[i][j]) // map
+            o > 3 ? b(a[i][j]) // map
+            : o > 2 ? a[i][j] * b // scale
+            : o > 1 ? a[i][j] * b[i][j] // product
+            : o ? a[i][j] - b[i][j] // sub
             : a[i][j] + b[i][j] // add
           )
         ), 0)
