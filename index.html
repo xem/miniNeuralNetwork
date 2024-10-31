@@ -1,9 +1,11 @@
 ﻿<script>
+// Helpers
+// =======
 
 // Create a matrix:
 // - filled with random numbers by default
 // - filled with zero if z = 1
-M = (r,c,z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() * 2 - 1));
+M = (r,c,z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() - 1));
 
 // Operations on matrices:
 // o === 0: addition (a+=b) (default)
@@ -36,98 +38,105 @@ O = (a, b, o, r, i, j, k, l = "length") => {
   return r;
 }
 
+// Customization
+// =============
+
+// Learning rate
+l = 0.3;
+
+// Activation function (sigmoid)
+f = (x => 1 / (1 + Math.E**-x));
+
+// Gradient descent function
+g = (y => y * (1 - y));
+
+// Data
+// ====
+
+// Weights: W, w
+// Bias: B, b
+
 // Mini Neural Network
-N = {
+// ===================
 
-  // Init
+// Init
   
-  // Params:
-  // - i: input nodes
-  // - h: hidden nodes
-  // - o: output nodes
-  // - l: learning rate
-  // - f: activation function (default: sigmoid)
-  // - g: gradient descent function (default: y*(1-y))
+// Params:
+// - i: input nodes
+// - h: hidden nodes
+// - o: output nodes
+// - l: learning rate
+
+i = (i, h, o) => {
+
+  // Generate random weights from input nodes to hidden nodes, and from hidden nodes to output nodes
+  w = M(h, i); 
+  W = M(o, h);
+
+  // Generate random bias for hidden and output nodes
+  b = M(h, 1);
+  B = M(o, 1);
+}
+
+// Passthrough function
+// Used for both training and querying the network
+
+// Params: 
+// - input: input nodes
+// - target: desired output (for training) / undefined (for querying)
+p = (input, target, h, o) => {
   
-  i: (i, h, o, l = 0.3, f = (x => 1 / (1 + Math.exp(-x))), g = (y => y * (1 - y))) => {
-    
-    // Save l, f, g for later
-    N.l = l;
-    N.f = f;
-    N.g = g;
-
-    // Generate random weights from input nodes to hidden nodes, and from hidden nodes to output nodes
-    N.w = M(h, i); 
-    N.W = M(o, h);
-
-    // Generate random bias for hidden and output nodes
-    N.b = M(h, 1);
-    N.B = M(o, 1);
-  },
-
-  // Passthrough function
-  // Used for both training and querying the network
+  // Generate hidden nodes' outputs
+  O(h = O(w, input, 6), b);
   
-  // Params: 
-  // - input: input nodes
-  // - target: desired output (for training) / undefined (for querying)
-  p: (input, target, h, o) => {
-    
-    // Generate hidden nodes' outputs
-    O(h = O(N.w, input, 6), N.b);
-    
-    // Activation function
-    O(h, N.f, 4);
+  // Activation function
+  O(h, f, 4);
 
-    // Generating output nodes' output
-    O(o = O(N.W, h, 6), N.B);
-    O(o, N.f, 4);
-    
-    // Query code ends here:
-    if(!target) return o;
+  // Generating output nodes' output
+  O(o = O(W, h, 6), B);
+  O(o, f, 4);
+  
+  // Query code ends here:
+  if(!target) return o;
 
-    // Training coninues here:
-    // Calculate output nodes' error (target - output)
-    O(target, o, 1);
+  // Training coninues here:
+  // Calculate output nodes' error (target - output)
+  O(target, o, 1);
 
-    // Calculate output nodes' gradient
-    O(o, N.g, 4);
-    O(o, target, 2)
-    O(o, N.l, 3);
+  // Calculate output nodes' gradient
+  O(o, g, 4);
+  O(o, target, 2)
+  O(o, l, 3);
 
-    // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
-    //console.log(h, O(h, 0));
-    O(N.W, O(o, [h.flat()], 6));
-    
-    // Adjust bias with gradients
-    O(N.B, o); 
+  // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
+  O(W, O(o, [h.flat()], 6));
+  
+  // Adjust bias with gradients
+  O(B, o); 
 
-    // Calculate hidden gradient, apply the hidden layer errors (transposed hidden to output weights x output nodes errors)
-    O(h, N.g, 4);
-    //console.log(N.W);
-    O(h, O(N.W[0].map(z=>[z]), target, 6), 2);
-    O(h, N.l, 3);
+  // Calculate hidden gradient, apply the hidden layer errors (transposed hidden to output weights x output nodes errors)
+  O(h, g, 4);
+  O(h, O(W[0].map(z=>[z]), target, 6), 2);
+  O(h, l, 3);
 
-    // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
-    //console.log(input, O(input, 0));
-    O(N.w, O(h, [input.flat()], 6));
-    
-    // Adjust the bias with gradients
-    O(N.b, h);
-  }
+  // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
+  O(w, O(h, [input.flat()], 6));
+  
+  // Adjust the bias with gradients
+  O(b, h);
 }
 
 // Columnize an array ([a,b] => [[a],[b]])
 C = a => a.map(z=>[z]);
 
 // Demo
-N.i(2,3,1);
+i(2,3,1);
 
 console.log("Before training...");
-console.log('0 AND 0',N.p(C([0,0]))[0][0]);
-console.log('0 AND 1',N.p(C([0,1]))[0][0]);
-console.log('1 AND 0',N.p(C([1,0]))[0][0]);
-console.log('1 AND 1',N.p(C([1,1]))[0][0]);
+console.log('0 AND 0',p(C([0,0]))[0][0]);
+console.log('0 AND 1',p(C([0,1]))[0][0]);
+console.log('1 AND 0',p(C([1,0]))[0][0]);
+console.log('1 AND 1',p(C([1,1]))[0][0]);
 
 training_data = [
   [[1,1], [1]],
@@ -137,26 +146,26 @@ training_data = [
 ];
 
 // several training epochs
-for(i = 0; i < 50000; i++){
+for(t = 0; t < 50000; t++){
   tdata = training_data[Math.floor(Math.random() * training_data.length)];
-  N.p(C(tdata[0]), C(tdata[1]));
+  p(C(tdata[0]), C(tdata[1]));
 }
 
 console.log("After training...");
-console.log('0 AND 0',N.p(C([0,0]))[0][0]);
-console.log('0 AND 1',N.p(C([0,1]))[0][0]);
-console.log('1 AND 0',N.p(C([1,0]))[0][0]);
-console.log('1 AND 1',N.p(C([1,1]))[0][0]);
+console.log('0 AND 0',p(C([0,0]))[0][0]);
+console.log('0 AND 1',p(C([0,1]))[0][0]);
+console.log('1 AND 0',p(C([1,0]))[0][0]);
+console.log('1 AND 1',p(C([1,1]))[0][0]);
 
 
 // Demo 2
-N.i(2,10,1);
+i(2,10,1);
 
 console.log("Before training...");
-console.log('0 XOR 0',N.p(C([0,0]))[0][0]);
-console.log('0 XOR 1',N.p(C([0,1]))[0][0]);
-console.log('1 XOR 0',N.p(C([1,0]))[0][0]);
-console.log('1 XOR 1',N.p(C([1,1]))[0][0]);
+console.log('0 XOR 0',p(C([0,0]))[0][0]);
+console.log('0 XOR 1',p(C([0,1]))[0][0]);
+console.log('1 XOR 0',p(C([1,0]))[0][0]);
+console.log('1 XOR 1',p(C([1,1]))[0][0]);
 
 training_data2 = [
   [[1,1], [0]],
@@ -166,14 +175,14 @@ training_data2 = [
 ];
 
 // several training epochs
-for(i = 0; i < 50000; i++){
+for(t = 0; t < 50000; t++){
   tdata = training_data2[Math.floor(Math.random() * training_data2.length)];
-  N.p(C(tdata[0]), C(tdata[1]));
+  p(C(tdata[0]), C(tdata[1]));
 }
 
 console.log("After training...");
-console.log('0 XOR 0',N.p(C([0,0]))[0][0]);
-console.log('0 XOR 1',N.p(C([0,1]))[0][0]);
-console.log('1 XOR 0',N.p(C([1,0]))[0][0]);
-console.log('1 XOR 1',N.p(C([1,1]))[0][0]);
+console.log('0 XOR 0',p(C([0,0]))[0][0]);
+console.log('0 XOR 1',p(C([0,1]))[0][0]);
+console.log('1 XOR 0',p(C([1,0]))[0][0]);
+console.log('1 XOR 1',p(C([1,1]))[0][0]);
 </script>
