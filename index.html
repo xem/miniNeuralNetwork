@@ -5,7 +5,7 @@
 // Create a matrix:
 // - filled with random numbers by default
 // - filled with zero if z = 1
-M = (r,c,z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() - 1));
+M = (r,c=1,z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() - 1));
 
 // Operations on matrices:
 // o === 0: addition (a+=b) (default)
@@ -35,7 +35,7 @@ O = (a, b, o, r, i, j, k, l = "length") => {
       }
     }
   }
-  return r;
+  return o === 6 ? r : a;
 }
 
 // Customization
@@ -74,8 +74,8 @@ i = (i, h, o) => {
   W = M(o, h);
 
   // Generate random bias for hidden and output nodes
-  b = M(h, 1);
-  B = M(o, 1);
+  b = M(h);
+  B = M(o);
 }
 
 // Passthrough function
@@ -87,14 +87,9 @@ i = (i, h, o) => {
 p = (input, target, h, o) => {
   
   // Generate hidden nodes' outputs
-  O(h = O(w, input, 6), b);
-  
-  // Activation function
-  O(h, f, 4);
-
+  // Use activation function
   // Generating output nodes' output
-  O(o = O(W, h, 6), B);
-  O(o, f, 4);
+  o = O(O(O(W, O(O(h = O(w, input, 6), b), f, 4), 6), B), f, 4);
   
   // Query code ends here:
   if(!target) return o;
@@ -104,23 +99,15 @@ p = (input, target, h, o) => {
   O(target, o, 1);
 
   // Calculate output nodes' gradient
-  O(o, g, 4);
-  O(o, target, 2)
-  O(o, l, 3);
-
   // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
-  O(W, O(o, [h.flat()], 6));
+  O(W, O(o = O(O(O(o, g, 4), target, 2), l, 3), [h.flat()], 6));
   
   // Adjust bias with gradients
   O(B, o); 
 
   // Calculate hidden gradient, apply the hidden layer errors (transposed hidden to output weights x output nodes errors)
-  O(h, g, 4);
-  O(h, O(W[0].map(z=>[z]), target, 6), 2);
-  O(h, l, 3);
-
   // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
-  O(w, O(h, [input.flat()], 6));
+  O(w, O(h = O(O(O(h, g, 4), O(W[0].map(z=>[z]), target, 6), 2), l, 3), [input.flat()], 6));
   
   // Adjust the bias with gradients
   O(b, h);
