@@ -14,8 +14,7 @@ M = (r, c = 1, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random
 // o === 3: scale (a*=b, b is a scalar)
 // o === 4: map (a=b(a), b is a function
 // o === 6: dot product (r = a.b)
-O = (a, b, o, r, w) => {
-  if(o === 6) r = M(a[l], b[0][l], 1); // dot product
+O = (a, b, o, r = (o > 5 && M(a.length, b[0].length, 1)), w) => {
   a.map((z,i)=>{
     z.map((y,j)=>{
       w = b[i]?.[j];
