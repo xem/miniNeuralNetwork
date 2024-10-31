@@ -5,7 +5,7 @@
 // Create a matrix:
 // - filled with random numbers by default
 // - filled with zero if z = 1
-M = (r,c=1,z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() - 1));
+M = (r, c = 1, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() - 1));
 
 // Operations on matrices:
 // o === 0: addition (a+=b) (default)
@@ -14,27 +14,21 @@ M = (r,c=1,z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() -
 // o === 3: scale (a*=b, b is a scalar)
 // o === 4: map (a=b(a), b is a function
 // o === 6: dot product (r = a.b)
-O = (a, b, o, r, i, j, k, l = "length") => {
+O = (a, b, o, r, w) => {
   if(o === 6) r = M(a[l], b[0][l], 1); // dot product
-  for(i = a[l]; i--;){
-    for(j = a[0][l]; j--;){
-      if(
-        o > 5 || (( // dot
-          a[i][j] = (
-            o > 3 ? b(a[i][j]) // map
-            : o > 2 ? a[i][j] * b // scale
-            : o > 1 ? a[i][j] * b[i][j] // product
-            : o ? a[i][j] - b[i][j] // sub
-            : a[i][j] + b[i][j] // add
-          )
-        ), 0)
-      ){
-        for(k = b[0][l]; k--;){
-          r[i][k] += a[i][j] * b[j][k]; // dot
-        }
-      }
-    }
-  }
+  a.map((z,i)=>{
+    z.map((y,j)=>{
+      w = b[i]?.[j];
+      o > 5 ? b[0].map((v,k)=> r[i][k] += y * b[j][k]) // dot
+      : z[j] = (
+        o > 3 ? b(y) // map
+        : o > 2 ? y * b // scale
+        : o > 1 ? y * w // product
+        : o ? y - w // sub
+        : y + w // add
+      )
+    });
+  });
   return o === 6 ? r : a;
 }
 
