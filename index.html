@@ -1,11 +1,11 @@
 ﻿<script>
 
-// Create matrix
+// Create a matrix:
 // - filled with random numbers by default
 // - filled with zero if z = 1
 M = (r,c,z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() * 2 - 1));
 
-// Operations on matrices
+// Operations on matrices:
 // o === 0: addition (a+=b) (default)
 // o === 1: subtraction (a-=b)
 // o === 2: product (a*=b)
@@ -149,4 +149,31 @@ console.log('1 AND 0',N.p(C([1,0]))[0][0]);
 console.log('1 AND 1',N.p(C([1,1]))[0][0]);
 
 
+// Demo 2
+N.i(2,10,1);
+
+console.log("Before training...");
+console.log('0 XOR 0',N.p(C([0,0]))[0][0]);
+console.log('0 XOR 1',N.p(C([0,1]))[0][0]);
+console.log('1 XOR 0',N.p(C([1,0]))[0][0]);
+console.log('1 XOR 1',N.p(C([1,1]))[0][0]);
+
+training_data2 = [
+  [[1,1], [0]],
+  [[1,0], [1]],
+  [[0,1], [1]],
+  [[0,0], [0]],
+];
+
+// several training epochs
+for(i = 0; i < 50000; i++){
+  tdata = training_data2[Math.floor(Math.random() * training_data2.length)];
+  N.p(C(tdata[0]), C(tdata[1]));
+}
+
+console.log("After training...");
+console.log('0 XOR 0',N.p(C([0,0]))[0][0]);
+console.log('0 XOR 1',N.p(C([0,1]))[0][0]);
+console.log('1 XOR 0',N.p(C([1,0]))[0][0]);
+console.log('1 XOR 1',N.p(C([1,1]))[0][0]);
 </script>
