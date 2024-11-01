@@ -31,20 +31,8 @@ O = (a, b, o, r = (o > 5 && M(a.length, b[0].length, 1)), w) => {
   return o > 5 ? r : a;
 }
 
-// Customization
-// =============
-
-// Learning rate
-l = 0.3;
-
-// Activation function (sigmoid)
-f = (x => 1 / (1 + Math.E**-x));
-
-// Gradient descent function
-g = (y => y * (1 - y));
-
-// Data
-// ====
+// Global vars
+// ===========
 
 // Weights: W, w
 // Bias: B, b
@@ -86,6 +74,7 @@ p = (input, target, h, o) => {
   
   // Query code ends here:
   if(target){
+    console.log(target);
 
     // Training coninues here:
     // Calculate output nodes' error (target - output)
@@ -108,6 +97,24 @@ p = (input, target, h, o) => {
   
   return o;
 }
+
+
+
+// Customization
+// =============
+
+// Learning rate
+l = 0.3;
+
+// Activation function (sigmoid)
+f = (x => 1 / (1 + Math.E**-x));
+
+// Gradient descent function
+g = (y => y * (1 - y));
+
+
+// Demos
+// =====
 
 // Columnize an array ([a,b] => [[a],[b]])
 C = a => a.map(z=>[z]);
