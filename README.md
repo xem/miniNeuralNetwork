@@ -57,3 +57,11 @@ for(i = 0; i < 10000; i++){
 p([[1],[0]]) // 0.99...
 p([[1],[1]]) // 0.01...
 ```
+
+# Handwriting demo
+
+coming soon
+
+# Credits
+
+-- golfed by @MaximeEuziere and @JohnMeuser
