@@ -67,6 +67,12 @@ p([[1],[1]]) // 0.01...
 - [XOR](https://xem.github.io/miniNeuralNetwork/demos/XOR.html)
 - [Handwritten digits](https://xem.github.io/miniNeuralNetwork/demos/digits.html)
 
+## Sources
+
+- This repo (3kb minified): https://github.com/CodingTrain/Toy-Neural-Network-JS/tree/master?tab=readme-ov-file
+- This book: https://www.amazon.fr/Make-Your-Own-Neural-Network/dp/1530826608/
+- This database: https://github.com/lorenmh/mnist_handwritten_json
+
 ## Credits
 
--- golfed by @MaximeEuziere and @JohnMeuser
+Golfed by @MaximeEuziere and @JohnMeuser
