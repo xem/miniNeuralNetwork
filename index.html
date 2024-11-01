@@ -8,7 +8,7 @@
 M = (r, c = 1, z) => Array(r).fill().map(() => Array(c).fill(z ? 0 : Math.random() - 1));
 
 // Operations on matrices:
-// o === 0: addition (a+=b) (default)
+// o === undefined: addition (a+=b) (default)
 // o === 1: subtraction (a-=b)
 // o === 2: product (a*=b)
 // o === 3: scale (a*=b, b is a scalar)
@@ -28,7 +28,7 @@ O = (a, b, o, r = (o > 5 && M(a.length, b[0].length, 1)), w) => {
       )
     });
   });
-  return o === 6 ? r : a;
+  return o > 5 ? r : a;
 }
 
 // Customization
