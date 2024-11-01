@@ -85,25 +85,28 @@ p = (input, target, h, o) => {
   o = O(O(O(W, O(O(h = O(w, input, 6), b), f, 4), 6), B), f, 4);
   
   // Query code ends here:
-  if(!target) return o;
+  if(target){
 
-  // Training coninues here:
-  // Calculate output nodes' error (target - output)
-  O(target, o, 1);
+    // Training coninues here:
+    // Calculate output nodes' error (target - output)
+    O(target, o, 1);
 
-  // Calculate output nodes' gradient
-  // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
-  O(W, O(o = O(O(O(o, g, 4), target, 2), l, 3), [h.flat()], 6));
+    // Calculate output nodes' gradient
+    // Adjust hidden to output weights with deltas (output gradient x transposed hidden nodes)
+    O(W, O(o = O(O(O(o, g, 4), target, 2), l, 3), [h.flat()], 6));
+    
+    // Adjust bias with gradients
+    O(B, o); 
+
+    // Calculate hidden gradient, apply the hidden layer errors (transposed hidden to output weights x output nodes errors)
+    // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
+    O(w, O(h = O(O(O(h, g, 4), O(W[0].map(z=>[z]), target, 6), 2), l, 3), [input.flat()], 6));
+    
+    // Adjust the bias with gradients
+    O(b, h);
+  }
   
-  // Adjust bias with gradients
-  O(B, o); 
-
-  // Calculate hidden gradient, apply the hidden layer errors (transposed hidden to output weights x output nodes errors)
-  // Adjust input to hidden weights with deltas (hidden gradient x transposed input)
-  O(w, O(h = O(O(O(h, g, 4), O(W[0].map(z=>[z]), target, 6), 2), l, 3), [input.flat()], 6));
-  
-  // Adjust the bias with gradients
-  O(b, h);
+  return o;
 }
 
 // Columnize an array ([a,b] => [[a],[b]])
