@@ -1,5 +1,4 @@
-﻿<script>
-// Helpers
+﻿// Helpers
 // =======
 
 // Create a matrix:
@@ -66,6 +65,7 @@ i = (i, h, o) => {
 // - input: input nodes
 // - target: desired output (for training) / undefined (for querying)
 p = (input, target, h, o) => {
+  //console.log(target);
   
   // Generate hidden nodes' outputs
   // Use activation function
@@ -74,7 +74,6 @@ p = (input, target, h, o) => {
   
   // Query code ends here:
   if(target){
-    console.log(target);
 
     // Training coninues here:
     // Calculate output nodes' error (target - output)
@@ -95,6 +94,8 @@ p = (input, target, h, o) => {
     O(b, h);
   }
   
+  //console.log(target);
+  
   return o;
 }
 
@@ -111,68 +112,3 @@ f = (x => 1 / (1 + Math.E**-x));
 
 // Gradient descent function
 g = (y => y * (1 - y));
-
-
-// Demos
-// =====
-
-// Columnize an array ([a,b] => [[a],[b]])
-C = a => a.map(z=>[z]);
-
-// Demo
-i(2,3,1);
-
-console.log("Before training...");
-console.log('0 AND 0',p(C([0,0]))[0][0]);
-console.log('0 AND 1',p(C([0,1]))[0][0]);
-console.log('1 AND 0',p(C([1,0]))[0][0]);
-console.log('1 AND 1',p(C([1,1]))[0][0]);
-
-training_data = [
-  [[1,1], [1]],
-  [[1,0], [0]],
-  [[0,1], [0]],
-  [[0,0], [0]],
-];
-
-// several training epochs
-for(t = 0; t < 50000; t++){
-  tdata = training_data[Math.floor(Math.random() * training_data.length)];
-  p(C(tdata[0]), C(tdata[1]));
-}
-
-console.log("After training...");
-console.log('0 AND 0',p(C([0,0]))[0][0]);
-console.log('0 AND 1',p(C([0,1]))[0][0]);
-console.log('1 AND 0',p(C([1,0]))[0][0]);
-console.log('1 AND 1',p(C([1,1]))[0][0]);
-
-
-// Demo 2
-i(2,10,1);
-
-console.log("Before training...");
-console.log('0 XOR 0',p(C([0,0]))[0][0]);
-console.log('0 XOR 1',p(C([0,1]))[0][0]);
-console.log('1 XOR 0',p(C([1,0]))[0][0]);
-console.log('1 XOR 1',p(C([1,1]))[0][0]);
-
-training_data2 = [
-  [[1,1], [0]],
-  [[1,0], [1]],
-  [[0,1], [1]],
-  [[0,0], [0]],
-];
-
-// several training epochs
-for(t = 0; t < 50000; t++){
-  tdata = training_data2[Math.floor(Math.random() * training_data2.length)];
-  p(C(tdata[0]), C(tdata[1]));
-}
-
-console.log("After training...");
-console.log('0 XOR 0',p(C([0,0]))[0][0]);
-console.log('0 XOR 1',p(C([0,1]))[0][0]);
-console.log('1 XOR 0',p(C([1,0]))[0][0]);
-console.log('1 XOR 1',p(C([1,1]))[0][0]);
-</script>

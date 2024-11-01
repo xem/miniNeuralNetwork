@@ -49,6 +49,9 @@ for(i = 0; i < 10000; i++){
 }
 ```
 
+(warning: `p` edits the target output, be careful if you want to reuse it)
+
+
 - Query the network by passing input data to the `p` function:
 
 ```js
@@ -58,10 +61,12 @@ p([[1],[0]]) // 0.99...
 p([[1],[1]]) // 0.01...
 ```
 
-# Handwriting demo
+## Demos
 
-coming soon
+- [AND](https://xem.github.io/miniNeuralNetwork/demos/AND.html)
+- [XOR](https://xem.github.io/miniNeuralNetwork/demos/XOR.html)
+- [Handwritten digits](https://xem.github.io/miniNeuralNetwork/demos/digits.html)
 
-# Credits
+## Credits
 
 -- golfed by @MaximeEuziere and @JohnMeuser

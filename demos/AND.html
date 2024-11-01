@@ -1,0 +1,27 @@
+﻿<body id=body>
+<h2>AND demo</h2>
+<script src=../commented.js></script>
+<script>
+// Demo
+i(2,3,1);
+
+body.innerHTML += "<p>Before training...";
+body.innerHTML += '<br>0 AND 0: '+p([[0],[0]])[0][0];
+body.innerHTML += '<br>0 AND 1: '+p([[0],[1]])[0][0];
+body.innerHTML += '<br>1 AND 0: '+p([[1],[0]])[0][0];
+body.innerHTML += '<br>1 AND 1: '+p([[1],[1]])[0][0];
+
+// several training epochs
+for(i = 0; i < 50000; i++){
+  p([[0],[0]], [[0]])
+  p([[1],[0]], [[0]])
+  p([[0],[1]], [[0]])
+  p([[1],[1]], [[1]])
+}
+
+body.innerHTML += "<p>After training...";
+body.innerHTML += '<br>0 AND 0: '+p([[0],[0]])[0][0];
+body.innerHTML += '<br>0 AND 1: '+p([[0],[1]])[0][0];
+body.innerHTML += '<br>1 AND 0: '+p([[1],[0]])[0][0];
+body.innerHTML += '<br>1 AND 1: <b>'+p([[1],[1]])[0][0];
+</script>
