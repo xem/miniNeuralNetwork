@@ -64,7 +64,7 @@ p([[1], [1]]) // 0.01...
 
 - [AND](https://xem.github.io/miniNeuralNetwork/demos/AND.html)
 - [XOR](https://xem.github.io/miniNeuralNetwork/demos/XOR.html)
-- [Handwritten digits](https://xem.github.io/miniNeuralNetwork/demos/digits.html)
+- [Handwritten digits](https://xem.github.io/miniNeuralNetwork/demos/digits.html) - warning: 128MB!
 
 ## Sources
 
