@@ -42,14 +42,14 @@ train.onclick = () => {
   load.setAttribute("disabled", "1");
   k = 0;
   interval = setInterval(()=>{
-    for(l = 0; l < 10; l++){
-      if(l == 0){
+    for(ll = 0; ll < 10; ll++){
+      if(ll == 0){
         c.width ^= 0;
         for(ii = 28; ii--;){
-          for(j= 28; j--;){
-            col = samples[k].image[j*28+ii];
+          for(jj= 28; jj--;){
+            col = samples[k].image[jj*28+ii];
             x.fillStyle = "rgb("+col+","+col+"," + col + ")";
-            x.fillRect(ii*2,j*2,2,2);
+            x.fillRect(ii*2,jj*2,2,2);
           }
         }
         x.fillStyle = "#def";
