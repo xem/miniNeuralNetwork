@@ -15,17 +15,6 @@ class Matrix {
     this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
   }
 
-
-  M(n) {
-    if (n instanceof Matrix) {
-      // hadamard product
-      return this.F((e, i, j) => e * n.data[i][j]);
-    } else {
-      // Scalar product
-      return this.F(e => e * n);
-    }
-  }
-
   F(func) {
     // Apply a function to every element of matrix
     for (let i = 0; i < this.rows; i++) {
@@ -72,10 +61,13 @@ D = (a, b, r, i, j, k) => {
 R = (a, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] = Math.random() * 2 - 1; }
 
 // Add
-A = (a, b) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] += b.data[i][j]; }
+A = (a, b, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] += b.data[i][j]; }
 
+// Resize
+Z = (a, b, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] *= b; return a; }
 
-
+// Mul
+M = (a, b, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] *= b.data[i][j]; return a; }
 
 // Init
 I = (i, h, o) => {
@@ -90,8 +82,8 @@ P = (i, t, o, oe) => {
   h = D(W, i = C(i)).F(f);
   o = D(w, h).F(f);
   if(t){
-    A(w, D(F(o, g).M(oe = S(C(t), o)).M(l), T(h)));
-    A(W, D(F(h, g).M(D(T(w), oe)).M(l), T(i)));
+    A(w, D(Z(M(F(o, g), oe = S(C(t), o)),l), T(h)));
+    A(W, D(Z(M(F(h, g), D(T(w), oe)),l), T(i)));
   }
   return o.data.flat();
 }
