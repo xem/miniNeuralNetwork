@@ -15,24 +15,14 @@ class Matrix {
     this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
   }
 
-  copy() {
-    let m = new Matrix(this.rows, this.cols);
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.cols; j++) {
-        m.data[i][j] = this.data[i][j];
-      }
-    }
-    return m;
-  }
-
   static fromArray(arr) {
-    return new Matrix(arr.length, 1).map((e, i) => arr[i]);
+    return new Matrix(arr.length, 1).F((e, i) => arr[i]);
   }
 
-  static subtract(a, b) {
+  static S(a, b) {
     // Return a new Matrix a-b
     return new Matrix(a.rows, a.cols)
-      .map((_, i, j) => a.data[i][j] - b.data[i][j]);
+      .F((_, i, j) => a.data[i][j] - b.data[i][j]);
   }
 
   toArray() {
@@ -46,21 +36,21 @@ class Matrix {
   }
 
   randomize() {
-    return this.map(e => Math.random() * 2 - 1);
+    return this.F(e => Math.random() * 2 - 1);
   }
 
-  add(n) {
-    return this.map((e, i, j) => e + n.data[i][j]);
+  A(n) {
+    return this.F((e, i, j) => e + n.data[i][j]);
   }
 
-  static transpose(matrix) {
+  static T(matrix) {
     return new Matrix(matrix.cols, matrix.rows)
-      .map((_, i, j) => matrix.data[j][i]);
+      .F((_, i, j) => matrix.data[j][i]);
   }
 
-  static multiply(a, b) {
+  static D(a, b) {
     return new Matrix(a.rows, b.cols)
-      .map((e, i, j) => {
+      .F((e, i, j) => {
         // Dot product of values in col
         let sum = 0;
         for (let k = 0; k < a.cols; k++) {
@@ -70,17 +60,17 @@ class Matrix {
       });
   }
 
-  multiply(n) {
+  M(n) {
     if (n instanceof Matrix) {
       // hadamard product
-      return this.map((e, i, j) => e * n.data[i][j]);
+      return this.F((e, i, j) => e * n.data[i][j]);
     } else {
       // Scalar product
-      return this.map(e => e * n);
+      return this.F(e => e * n);
     }
   }
 
-  map(func) {
+  F(func) {
     // Apply a function to every element of matrix
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.cols; j++) {
@@ -91,10 +81,10 @@ class Matrix {
     return this;
   }
 
-  static map(matrix, func) {
+  static F(matrix, func) {
     // Apply a function to every element of matrix
     return new Matrix(matrix.rows, matrix.cols)
-      .map((e, i, j) => func(matrix.data[i][j], i, j));
+      .F((e, i, j) => func(matrix.data[i][j], i, j));
   }
 }
 
@@ -110,34 +100,34 @@ I = (i, h, o) => {
 // Predict
 P = (i) => {
   i = Matrix.fromArray(i);
-  let h = Matrix.multiply(wih, i);
-  h.map(f);
-  let output = Matrix.multiply(who, h);
-  output.map(f);
+  let h = Matrix.D(wih, i);
+  h.F(f);
+  let output = Matrix.D(who, h);
+  output.F(f);
   return output.toArray();
 }
 
 // Train
-T = (i, t) => {
+TR = (i, t) => {
   i = Matrix.fromArray(i);
-  let h = Matrix.multiply(wih, i);
-  h.map(f);
-  let o = Matrix.multiply(who, h);
-  o.map(f);
+  let h = Matrix.D(wih, i);
+  h.F(f);
+  let o = Matrix.D(who, h);
+  o.F(f);
   let targets = Matrix.fromArray(t);
-  let oe = Matrix.subtract(targets, o);
-  let gr = Matrix.map(o, g);
-  gr.multiply(oe);
-  gr.multiply(l);
-  let ht = Matrix.transpose(h);
-  let whod = Matrix.multiply(gr, ht);
-  who.add(whod);
-  let whot = Matrix.transpose(who);
-  let he = Matrix.multiply(whot, oe);
-  let hg = Matrix.map(h, g);
-  hg.multiply(he);
-  hg.multiply(l);
-  let it = Matrix.transpose(i);
-  let wihd = Matrix.multiply(hg, it);
-  wih.add(wihd);
+  let oe = Matrix.S(targets, o);
+  let gr = Matrix.F(o, g);
+  gr.M(oe);
+  gr.M(l);
+  let ht = Matrix.T(h);
+  let whod = Matrix.D(gr, ht);
+  who.A(whod);
+  let whot = Matrix.T(who);
+  let he = Matrix.D(whot, oe);
+  let hg = Matrix.F(h, g);
+  hg.M(he);
+  hg.M(l);
+  let it = Matrix.T(i);
+  let wihd = Matrix.D(hg, it);
+  wih.A(wihd);
 }
