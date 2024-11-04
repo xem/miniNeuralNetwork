@@ -7,7 +7,6 @@ g = x => x * (1 - x);
 // Learning rate
 l = 0.2;
 
-
 // Matrix
 M = (rows, cols) => Array(rows).fill().map(() => Array(cols).fill(0));
 
@@ -18,10 +17,10 @@ C = (a, r) => { r = a.map(z=>[z]); return r; }
 S = (a, b, r, i, j) => { r = M(a.length, a[0].length); for(i in r)for(j in r[i]) r[i][j] = a[i][j] - b[i][j]; return r; }
 
 // Transpose
-T = (a, r, i, j) => { r = M(a[0].length, a.length); for(i in r) for(j in r[i]) r[i][j] = a[j][i]; return r; }
+T = (a, b, r, i, j) => { r = M(a[0].length, a.length); for(i in r) for(j in r[i]) r[i][j] = a[j][i]; return r; }
 
 // Map
-F = (a, f, i, j) => { r = M(a.length, a[0].length); for(i in r)for(j in r[i]) r[i][j] = f(a[i][j]); return r; }
+F = (a, b, r, i, j) => { r = M(a.length, a[0].length); for(i in r)for(j in r[i]) r[i][j] = b(a[i][j]); return r; }
 
 // Dot
 D = (a, b, r, i, j, k) => {
@@ -37,16 +36,11 @@ D = (a, b, r, i, j, k) => {
   return r;
 }
 
-
-
-
-
-
 // Randomize
-R = (a, i, j) => { for(i in a) for(j in a[i]) a[i][j] = Math.random() * 2 - 1; }
+R = (a, b, i, j) => { for(i in a) for(j in a[i]) a[i][j] = Math.random() * 2 - 1; return a; }
 
 // Add
-A = (a, b, i, j) => { for(i in a) for(j in a[i]) a[i][j] += b[i][j]; }
+A = (a, b, i, j) => { for(i in a) for(j in a[i]) a[i][j] += b[i][j]; return a; }
 
 // Resize
 Z = (a, b, i, j) => { for(i in a) for(j in a[i]) a[i][j] *= b; return a; }
@@ -64,14 +58,12 @@ I = (i, h, o) => {
 // P(input, target) // train
 // P(input) // query
 P = (i, t, o, oe) => {
-  i = C(i);
-  h = F(D(W, i),f);
-  o = F(D(w, h),f);
+  o = F(D(w, h = F(D(W, i = C(i)), f)), f);
   
   if(t){
     oe = S(C(t), o);
-    A(w, D(Z(pr(F(o, g), oe),l), T(h)));
-    A(W, D(Z(pr(F(h, g), D(T(w), oe)),l), T(i)));
+    A(w, D(Z(pr(F(o, g), oe), l), T(h)));
+    A(W, D(Z(pr(F(h, g), D(T(w), oe)), l), T(i)));
   }
   return o.flat();
 }
