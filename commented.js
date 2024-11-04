@@ -15,19 +15,13 @@ class Matrix {
     this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
   }
 
-  // fromArray
-  static Z(arr) {
-    return new Matrix(arr.length, 1).F((e, i) => arr[i]);
-  }
 
-  static S(a, b) {
-    // Return a new Matrix a-b
-    return new Matrix(a.rows, a.cols).F((_, i, j) => a.data[i][j] - b.data[i][j]);
-  }
 
-  R() {
-    return this.F(e => Math.random() * 2 - 1);
-  }
+  // Sub (r = a - b)
+  static S(a, b) { return new Matrix(a.rows, a.cols).F((_, i, j) => a.data[i][j] - b.data[i][j]); }
+
+  // Randomize
+  R() { return this.F(e => Math.random() * 2 - 1); }
 
   A(n) {
     return this.F((e, i, j) => e + n.data[i][j]);
@@ -75,6 +69,9 @@ class Matrix {
   }
 }
 
+// Columnize ([1,2] => [[1],[2]])
+C = (a, r) => { r = new Matrix(a.length, 1); r.data = a.map(z=>[z]); return r; }
+
 // Init
 I = (i, h, o) => {
   W = new Matrix(h, i).R();
@@ -85,10 +82,10 @@ I = (i, h, o) => {
 // P(input, target) // train
 // P(input) // query
 P = (i, t, o, oe) => {
-  h = Matrix.D(W, i = Matrix.Z(i)).F(f);
+  h = Matrix.D(W, i = C(i)).F(f);
   o = Matrix.D(w, h).F(f);
   if(t){
-    w.A(Matrix.D(Matrix.F(o, g).M(oe = Matrix.S(Matrix.Z(t), o)).M(l), Matrix.T(h)));
+    w.A(Matrix.D(Matrix.F(o, g).M(oe = Matrix.S(C(t), o)).M(l), Matrix.T(h)));
     W.A(Matrix.D(Matrix.F(h, g).M(Matrix.D(Matrix.T(w), oe)).M(l), Matrix.T(i)));
   }
   return o.data.flat();
