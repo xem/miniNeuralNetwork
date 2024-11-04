@@ -30,11 +30,6 @@ class Matrix {
   }
 
   static subtract(a, b) {
-    if (a.rows !== b.rows || a.cols !== b.cols) {
-      console.log('Columns and Rows of A must match Columns and Rows of B.');
-      return;
-    }
-
     // Return a new Matrix a-b
     return new Matrix(a.rows, a.cols)
       .map((_, i, j) => a.data[i][j] - b.data[i][j]);
@@ -55,15 +50,7 @@ class Matrix {
   }
 
   add(n) {
-    if (n instanceof Matrix) {
-      if (this.rows !== n.rows || this.cols !== n.cols) {
-        console.log('Columns and Rows of A must match Columns and Rows of B.');
-        return;
-      }
-      return this.map((e, i, j) => e + n.data[i][j]);
-    } else {
-      return this.map(e => e + n);
-    }
+    return this.map((e, i, j) => e + n.data[i][j]);
   }
 
   static transpose(matrix) {
@@ -72,12 +59,6 @@ class Matrix {
   }
 
   static multiply(a, b) {
-    // Matrix product
-    if (a.cols !== b.rows) {
-      console.log('Columns of A must match rows of B.');
-      return;
-    }
-
     return new Matrix(a.rows, b.cols)
       .map((e, i, j) => {
         // Dot product of values in col
@@ -91,11 +72,6 @@ class Matrix {
 
   multiply(n) {
     if (n instanceof Matrix) {
-      if (this.rows !== n.rows || this.cols !== n.cols) {
-        console.log('Columns and Rows of A must match Columns and Rows of B.');
-        return;
-      }
-
       // hadamard product
       return this.map((e, i, j) => e * n.data[i][j]);
     } else {
@@ -123,86 +99,45 @@ class Matrix {
 }
 
 
-class NeuralNetwork {
-  /*
-  * if first argument is a NeuralNetwork the constructor clones it
-  * USAGE: cloned_nn = new NeuralNetwork(to_clone_nn);
-  */
-  constructor(in_nodes, hid_nodes, out_nodes) {
-      this.input_nodes = in_nodes;
-      this.hidden_nodes = hid_nodes;
-      this.output_nodes = out_nodes;
+// Init
+I = (i, h, o) => {
+  wih = new Matrix(h, i);
+  who = new Matrix(o, h);
+  wih.randomize();
+  who.randomize();
+}
 
-      this.weights_ih = new Matrix(this.hidden_nodes, this.input_nodes);
-      this.weights_ho = new Matrix(this.output_nodes, this.hidden_nodes);
-      this.weights_ih.randomize();
-      this.weights_ho.randomize();
-  }
+// Predict
+P = (i) => {
+  i = Matrix.fromArray(i);
+  let h = Matrix.multiply(wih, i);
+  h.map(f);
+  let output = Matrix.multiply(who, h);
+  output.map(f);
+  return output.toArray();
+}
 
-  predict(input_array) {
-
-    // Generating the Hidden Outputs
-    let inputs = Matrix.fromArray(input_array);
-    let hidden = Matrix.multiply(this.weights_ih, inputs);
-
-    // activation function!
-    hidden.map(f);
-
-    // Generating the output's output!
-    let output = Matrix.multiply(this.weights_ho, hidden);
- 
-    output.map(f);
-
-    // Sending back to the caller!
-    return output.toArray();
-  }
-
-  train(input_array, target_array) {
-    // Generating the Hidden Outputs
-    let inputs = Matrix.fromArray(input_array);
-    let hidden = Matrix.multiply(this.weights_ih, inputs);
-    // activation function!
-    hidden.map(f);
-
-    // Generating the output's output!
-    let outputs = Matrix.multiply(this.weights_ho, hidden);
-    outputs.map(f);
-
-    // Convert array to matrix object
-    let targets = Matrix.fromArray(target_array);
-
-    // Calculate the error
-    // ERROR = TARGETS - OUTPUTS
-    let output_errors = Matrix.subtract(targets, outputs);
-
-    // let gradient = outputs * (1 - outputs);
-    // Calculate gradient
-    let gradients = Matrix.map(outputs, g);
-    gradients.multiply(output_errors);
-    gradients.multiply(l);
-
-
-    // Calculate deltas
-    let hidden_T = Matrix.transpose(hidden);
-    let weight_ho_deltas = Matrix.multiply(gradients, hidden_T);
-
-    // Adjust the weights by deltas
-    this.weights_ho.add(weight_ho_deltas);
-    
-    // Calculate the hidden layer errors
-    let who_t = Matrix.transpose(this.weights_ho);
-    let hidden_errors = Matrix.multiply(who_t, output_errors);
-
-    // Calculate hidden gradient
-    let hidden_gradient = Matrix.map(hidden, g);
-    hidden_gradient.multiply(hidden_errors);
-    hidden_gradient.multiply(l);
-
-    // Calcuate input->hidden deltas
-    let inputs_T = Matrix.transpose(inputs);
-    let weight_ih_deltas = Matrix.multiply(hidden_gradient, inputs_T);
-
-    this.weights_ih.add(weight_ih_deltas);
-
-  }
+// Train
+T = (i, t) => {
+  i = Matrix.fromArray(i);
+  let h = Matrix.multiply(wih, i);
+  h.map(f);
+  let o = Matrix.multiply(who, h);
+  o.map(f);
+  let targets = Matrix.fromArray(t);
+  let oe = Matrix.subtract(targets, o);
+  let gr = Matrix.map(o, g);
+  gr.multiply(oe);
+  gr.multiply(l);
+  let ht = Matrix.transpose(h);
+  let whod = Matrix.multiply(gr, ht);
+  who.add(whod);
+  let whot = Matrix.transpose(who);
+  let he = Matrix.multiply(whot, oe);
+  let hg = Matrix.map(h, g);
+  hg.multiply(he);
+  hg.multiply(l);
+  let it = Matrix.transpose(i);
+  let wihd = Matrix.multiply(hg, it);
+  wih.add(wihd);
 }

@@ -16,7 +16,7 @@
 <p id=corrects>Correct: ?/10000</p>
 </div>
 
-<script src="../min.js"></script>
+<script src="../commented.js"></script>
 <script src=mnist_train_part_1.js></script>
 <script src=mnist_train_part_2.js></script>
 <script src=mnist_test.js></script>
@@ -36,7 +36,7 @@ onload = () => {
   loaded.style.display = "block";
 
   // Init
-  nn = new NeuralNetwork(784, 100, 10);
+  I(784, 100, 10);
 }
 
 // Train
@@ -62,7 +62,7 @@ train.onclick = () => {
       }
       target = Array(10).fill(0.01);
       target[samples[k].label] = 0.99;
-      nn.train(samples[k].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
+      T(samples[k].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
       k++;
     }
     progress.innerHTML = "Training: "+k+"/60000";
@@ -90,11 +90,11 @@ function findMax(arr) {
 guess.onclick = () => {
   correct = 0;
   for(zzz = 0; zzz < 10000; zzz++){
-    yyy = nn.predict(mnist_test[zzz].image.map(z=> (z / 255.0 * 0.99) + 0.01));
+    yyy = P(mnist_test[zzz].image.map(z=> (z / 255.0 * 0.99) + 0.01));
     guess = findMax(yyy);
     if(guess == mnist_test[zzz].label) correct ++;
   }
-  corrects.innerHTML = "Correct: " + correct + "/10000"
+  corrects.innerHTML = "Correct: " + correct + "/10000 (" + (correct/100) + "% accuracy)";
 }
 
 </script>
