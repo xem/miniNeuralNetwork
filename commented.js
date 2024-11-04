@@ -91,43 +91,21 @@ class Matrix {
 
 // Init
 I = (i, h, o) => {
-  wih = new Matrix(h, i);
-  who = new Matrix(o, h);
-  wih.randomize();
-  who.randomize();
+  W = new Matrix(h, i);
+  w = new Matrix(o, h);
+  W.randomize();
+  w.randomize();
 }
 
 // Predict
 P = (i) => {
-  i = Matrix.fromArray(i);
-  let h = Matrix.D(wih, i);
-  h.F(f);
-  let output = Matrix.D(who, h);
-  output.F(f);
-  return output.toArray();
+  h = Matrix.D(W, i = Matrix.fromArray(i)).F(f);
+  return Matrix.D(w, h).F(f).toArray();
 }
 
 // Train
-TR = (i, t) => {
-  i = Matrix.fromArray(i);
-  let h = Matrix.D(wih, i);
-  h.F(f);
-  let o = Matrix.D(who, h);
-  o.F(f);
-  let targets = Matrix.fromArray(t);
-  let oe = Matrix.S(targets, o);
-  let gr = Matrix.F(o, g);
-  gr.M(oe);
-  gr.M(l);
-  let ht = Matrix.T(h);
-  let whod = Matrix.D(gr, ht);
-  who.A(whod);
-  let whot = Matrix.T(who);
-  let he = Matrix.D(whot, oe);
-  let hg = Matrix.F(h, g);
-  hg.M(he);
-  hg.M(l);
-  let it = Matrix.T(i);
-  let wihd = Matrix.D(hg, it);
-  wih.A(wihd);
+TR = (i, t, o, oe) => {
+  h = Matrix.D(W, i = Matrix.fromArray(i)).F(f);
+  w.A(Matrix.D(Matrix.F(o = Matrix.D(w, h).F(f), g).M(oe = Matrix.S(Matrix.fromArray(t), o)).M(l), Matrix.T(h)));
+  W.A(Matrix.D(Matrix.F(h, g).M(Matrix.D(Matrix.T(w), oe)).M(l), Matrix.T(i)));
 }
