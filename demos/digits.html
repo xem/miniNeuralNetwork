@@ -57,7 +57,7 @@ train.onclick = () => {
       }
       target = Array(10).fill(0.01);
       target[samples[k].label] = 0.99;
-      TR(samples[k].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
+      P(samples[k].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
       k++;
     }
     progress.innerHTML = "Training: "+k+"/60000";

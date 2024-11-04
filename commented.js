@@ -25,11 +25,6 @@ class Matrix {
     return new Matrix(a.rows, a.cols).F((_, i, j) => a.data[i][j] - b.data[i][j]);
   }
 
-  // toArray
-  Y() {
-    return this.data.flat();
-  }
-
   R() {
     return this.F(e => Math.random() * 2 - 1);
   }
@@ -43,8 +38,7 @@ class Matrix {
   }
 
   static D(a, b) {
-    return new Matrix(a.rows, b.cols)
-      .F((e, i, j) => {
+    return new Matrix(a.rows, b.cols).F((e, i, j) => {
         // Dot product of values in col
         let sum = 0;
         for (let k = 0; k < a.cols; k++) {
@@ -81,22 +75,21 @@ class Matrix {
   }
 }
 
-
 // Init
 I = (i, h, o) => {
   W = new Matrix(h, i).R();
   w = new Matrix(o, h).R();
 }
 
-// Predict
-P = (i) => {
+// Passthrough
+// P(input, target) // train
+// P(input) // query
+P = (i, t, o, oe) => {
   h = Matrix.D(W, i = Matrix.Z(i)).F(f);
-  return Matrix.D(w, h).F(f).Y();
-}
-
-// Train
-TR = (i, t, o, oe) => {
-  h = Matrix.D(W, i = Matrix.Z(i)).F(f);
-  w.A(Matrix.D(Matrix.F(o = Matrix.D(w, h).F(f), g).M(oe = Matrix.S(Matrix.Z(t), o)).M(l), Matrix.T(h)));
-  W.A(Matrix.D(Matrix.F(h, g).M(Matrix.D(Matrix.T(w), oe)).M(l), Matrix.T(i)));
+  o = Matrix.D(w, h).F(f);
+  if(t){
+    w.A(Matrix.D(Matrix.F(o, g).M(oe = Matrix.S(Matrix.Z(t), o)).M(l), Matrix.T(h)));
+    W.A(Matrix.D(Matrix.F(h, g).M(Matrix.D(Matrix.T(w), oe)).M(l), Matrix.T(i)));
+  }
+  return o.data.flat();
 }
