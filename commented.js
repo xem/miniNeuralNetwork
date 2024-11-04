@@ -8,66 +8,70 @@ g = x => x * (1 - x);
 l = 0.2;
 
 
-class Matrix {
-  constructor(rows, cols) {
-    this.rows = rows;
-    this.cols = cols;
-    this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
-  }
-}
+// Matrix
+M = (rows, cols) => Array(rows).fill().map(() => Array(cols).fill(0));
 
 // Columnize ([1,2] => [[1],[2]])
-C = (a, r) => { r = new Matrix(a.length, 1); r.data = a.map(z=>[z]); return r; }
+C = (a, r) => { r = a.map(z=>[z]); return r; }
 
 // Sub
-S = (a, b, r, i, j) => { r = new Matrix(a.rows, a.cols); for(i in r.data)for(j in r.data[i]) r.data[i][j] = a.data[i][j] - b.data[i][j]; return r; }
+S = (a, b, r, i, j) => { r = M(a.length, a[0].length); for(i in r)for(j in r[i]) r[i][j] = a[i][j] - b[i][j]; return r; }
 
 // Transpose
-T = (a, r, i, j) => { r = new Matrix(a.cols, a.rows); for(i in r.data) for(j in r.data[i]) r.data[i][j] = a.data[j][i]; return r; }
+T = (a, r, i, j) => { r = M(a[0].length, a.length); for(i in r) for(j in r[i]) r[i][j] = a[j][i]; return r; }
 
 // Map
-F = (a, f, i, j) => { r = new Matrix(a.rows, a.cols); for(i in r.data)for(j in r.data[i]) r.data[i][j] = f(a.data[i][j]); return r; }
+F = (a, f, i, j) => { r = M(a.length, a[0].length); for(i in r)for(j in r[i]) r[i][j] = f(a[i][j]); return r; }
 
 // Dot
 D = (a, b, r, i, j, k) => {
-  r = new Matrix(a.rows, b.cols);
-  for(i = 0; i < a.rows; i++){
-    for(j = 0; j < b.cols; j++){
-      for(k = 0; k < a.cols; k++){
-        r.data[i][j] += a.data[i][k] * b.data[k][j];
+  r = M(a.length, b[0].length);
+  for(i = 0; i < a.length; i++){
+    
+    for(j = 0; j < b[0].length; j++){
+      for(k = 0; k < a[0].length; k++){
+        r[i][j] += a[i][k] * b[k][j];
       }
     }
   }
   return r;
 }
 
+
+
+
+
+
 // Randomize
-R = (a, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] = Math.random() * 2 - 1; }
+R = (a, i, j) => { for(i in a) for(j in a[i]) a[i][j] = Math.random() * 2 - 1; }
 
 // Add
-A = (a, b, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] += b.data[i][j]; }
+A = (a, b, i, j) => { for(i in a) for(j in a[i]) a[i][j] += b[i][j]; }
 
 // Resize
-Z = (a, b, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] *= b; return a; }
+Z = (a, b, i, j) => { for(i in a) for(j in a[i]) a[i][j] *= b; return a; }
 
-// Mul
-M = (a, b, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] *= b.data[i][j]; return a; }
+// Product
+pr = (a, b, i, j) => { for(i in a) for(j in a[i]) a[i][j] *= b[i][j]; return a; }
 
 // Init
 I = (i, h, o) => {
-  R(W = new Matrix(h, i));
-  R(w = new Matrix(o, h));
+  R(W = M(h, i));
+  R(w = M(o, h));
 }
 
 // Passthrough
 // P(input, target) // train
 // P(input) // query
 P = (i, t, o, oe) => {
-  h = F(D(W, i = C(i)),f);
+  i = C(i);
+  h = F(D(W, i),f);
   o = F(D(w, h),f);
+  
   if(t){
-    A(w, D(Z(M(F(o, g), oe = S(C(t), o)),l), T(h)));
-    A(W, D(Z(M(F(h, g), D(T(w), oe)),l), T(i)));
+    oe = S(C(t), o);
+    A(w, D(Z(pr(F(o, g), oe),l), T(h)));
+    A(W, D(Z(pr(F(h, g), D(T(w), oe)),l), T(i)));
   }
-  return o.data.flat();
+  return o.flat();
 }

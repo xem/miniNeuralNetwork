@@ -40,6 +40,7 @@ train.onclick = () => {
   // Train
   train.setAttribute("disabled", "1");
   kk = 0;
+  
   interval = setInterval(()=>{
     for(ll = 0; ll < 20; ll++){
       if(ll == 0){
@@ -54,9 +55,10 @@ train.onclick = () => {
         x.fillStyle = "#def";
         x.fillText(samples[kk].label, 104, 109);
       }
+    
       target = Array(10).fill(0.01);
       target[samples[kk].label] = 0.99;
-      P(samples[kk].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
+    P(samples[kk].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
       kk++;
     }
     progress.innerHTML = "Training: "+kk+"/60000";
