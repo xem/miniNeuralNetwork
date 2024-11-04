@@ -17,9 +17,9 @@
 </div>
 
 <script src="../commented.js"></script>
-<script src=mnist_train_part_1.js></script>
-<script src=mnist_train_part_2.js></script>
-<script src=mnist_test.js></script>
+<script src="mnist_train_part_1.js"></script>
+<script src="mnist_train_part_2.js"></script>
+<script src="mnist_test.js"></script>
 
 <script>
 samples = [...mnist_train_part_1, ...mnist_train_part_2];
@@ -39,29 +39,28 @@ train.onclick = () => {
 
   // Train
   train.setAttribute("disabled", "1");
-  //load.setAttribute("disabled", "1");
-  k = 0;
+  kk = 0;
   interval = setInterval(()=>{
     for(ll = 0; ll < 20; ll++){
       if(ll == 0){
         c.width ^= 0;
         for(ii = 28; ii--;){
           for(jj= 28; jj--;){
-            col = samples[k].image[jj*28+ii];
+            col = samples[kk].image[jj*28+ii];
             x.fillStyle = "rgb("+col+","+col+"," + col + ")";
             x.fillRect(ii*4,jj*4,4,4);
           }
         }
         x.fillStyle = "#def";
-        x.fillText(samples[k].label, 104, 109);
+        x.fillText(samples[kk].label, 104, 109);
       }
       target = Array(10).fill(0.01);
-      target[samples[k].label] = 0.99;
-      P(samples[k].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
-      k++;
+      target[samples[kk].label] = 0.99;
+      P(samples[kk].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
+      kk++;
     }
-    progress.innerHTML = "Training: "+k+"/60000";
-    if(k >= 60000){
+    progress.innerHTML = "Training: "+kk+"/60000";
+    if(kk >= 60000){
       clearInterval(interval);
       train.removeAttribute("disabled");
       train.innerHTML = "TRAIN AGAIN (optional)";

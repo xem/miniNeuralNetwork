@@ -15,31 +15,11 @@ class Matrix {
     this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
   }
 
-
-
-  // Sub (r = a - b)
-  static S(a, b) { return new Matrix(a.rows, a.cols).F((_, i, j) => a.data[i][j] - b.data[i][j]); }
-
   // Randomize
   R() { return this.F(e => Math.random() * 2 - 1); }
 
   A(n) {
     return this.F((e, i, j) => e + n.data[i][j]);
-  }
-
-  static T(matrix) {
-    return new Matrix(matrix.cols, matrix.rows).F((_, i, j) => matrix.data[j][i]);
-  }
-
-  static D(a, b) {
-    return new Matrix(a.rows, b.cols).F((e, i, j) => {
-        // Dot product of values in col
-        let sum = 0;
-        for (let k = 0; k < a.cols; k++) {
-          sum += a.data[i][k] * b.data[k][j];
-        }
-        return sum;
-      });
   }
 
   M(n) {
@@ -72,6 +52,28 @@ class Matrix {
 // Columnize ([1,2] => [[1],[2]])
 C = (a, r) => { r = new Matrix(a.length, 1); r.data = a.map(z=>[z]); return r; }
 
+// Sub
+S = (a, b, r, i, j) => { r = new Matrix(a.rows, a.cols); for(i in r.data)for(j in r.data[i]) r.data[i][j] = a.data[i][j] - b.data[i][j]; return r; }
+
+// Transpose
+T = (a, r, i, j) => { r = new Matrix(a.cols, a.rows); for(i in r.data) for(j in r.data[i]) r.data[i][j] = a.data[j][i]; return r; }
+
+// Map
+F = (a, f, i, j) => { r = new Matrix(a.rows, a.cols); for(i in r.data)for(j in r.data[i]) r.data[i][j] = f(a.data[i][j]); return r; }
+
+// Dot
+D = (a, b, r, i, j, k) => {
+  r = new Matrix(a.rows, b.cols);
+  for(i = 0; i < a.rows; i++){
+    for(j = 0; j < b.cols; j++){
+      for(k = 0; k < a.cols; k++){
+        r.data[i][j] += a.data[i][k] * b.data[k][j];
+      }
+    }
+  }
+  return r;
+}
+
 // Init
 I = (i, h, o) => {
   W = new Matrix(h, i).R();
@@ -82,11 +84,11 @@ I = (i, h, o) => {
 // P(input, target) // train
 // P(input) // query
 P = (i, t, o, oe) => {
-  h = Matrix.D(W, i = C(i)).F(f);
-  o = Matrix.D(w, h).F(f);
+  h = D(W, i = C(i)).F(f);
+  o = D(w, h).F(f);
   if(t){
-    w.A(Matrix.D(Matrix.F(o, g).M(oe = Matrix.S(C(t), o)).M(l), Matrix.T(h)));
-    W.A(Matrix.D(Matrix.F(h, g).M(Matrix.D(Matrix.T(w), oe)).M(l), Matrix.T(i)));
+    w.A(D(F(o, g).M(oe = S(C(t), o)).M(l), T(h)));
+    W.A(D(F(h, g).M(D(T(w), oe)).M(l), T(i)));
   }
   return o.data.flat();
 }
