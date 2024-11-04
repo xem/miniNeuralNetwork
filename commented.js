@@ -14,22 +14,6 @@ class Matrix {
     this.cols = cols;
     this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
   }
-
-  F(func) {
-    // Apply a function to every element of matrix
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.cols; j++) {
-        let val = this.data[i][j];
-        this.data[i][j] = func(val, i, j);
-      }
-    }
-    return this;
-  }
-
-  static F(matrix, func) {
-    // Apply a function to every element of matrix
-    return new Matrix(matrix.rows, matrix.cols).F((e, i, j) => func(matrix.data[i][j], i, j));
-  }
 }
 
 // Columnize ([1,2] => [[1],[2]])
@@ -79,8 +63,8 @@ I = (i, h, o) => {
 // P(input, target) // train
 // P(input) // query
 P = (i, t, o, oe) => {
-  h = D(W, i = C(i)).F(f);
-  o = D(w, h).F(f);
+  h = F(D(W, i = C(i)),f);
+  o = F(D(w, h),f);
   if(t){
     A(w, D(Z(M(F(o, g), oe = S(C(t), o)),l), T(h)));
     A(W, D(Z(M(F(h, g), D(T(w), oe)),l), T(i)));
