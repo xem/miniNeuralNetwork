@@ -15,12 +15,6 @@ class Matrix {
     this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
   }
 
-  // Randomize
-  R() { return this.F(e => Math.random() * 2 - 1); }
-
-  A(n) {
-    return this.F((e, i, j) => e + n.data[i][j]);
-  }
 
   M(n) {
     if (n instanceof Matrix) {
@@ -74,10 +68,19 @@ D = (a, b, r, i, j, k) => {
   return r;
 }
 
+// Randomize
+R = (a, i, j) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] = Math.random() * 2 - 1; }
+
+// Add
+A = (a, b) => { for(i in a.data) for(j in a.data[i]) a.data[i][j] += b.data[i][j]; }
+
+
+
+
 // Init
 I = (i, h, o) => {
-  W = new Matrix(h, i).R();
-  w = new Matrix(o, h).R();
+  R(W = new Matrix(h, i));
+  R(w = new Matrix(o, h));
 }
 
 // Passthrough
@@ -87,8 +90,8 @@ P = (i, t, o, oe) => {
   h = D(W, i = C(i)).F(f);
   o = D(w, h).F(f);
   if(t){
-    w.A(D(F(o, g).M(oe = S(C(t), o)).M(l), T(h)));
-    W.A(D(F(h, g).M(D(T(w), oe)).M(l), T(i)));
+    A(w, D(F(o, g).M(oe = S(C(t), o)).M(l), T(h)));
+    A(W, D(F(h, g).M(D(T(w), oe)).M(l), T(i)));
   }
   return o.data.flat();
 }
