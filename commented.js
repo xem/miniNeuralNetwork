@@ -15,27 +15,22 @@ class Matrix {
     this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
   }
 
-  static fromArray(arr) {
+  // fromArray
+  static Z(arr) {
     return new Matrix(arr.length, 1).F((e, i) => arr[i]);
   }
 
   static S(a, b) {
     // Return a new Matrix a-b
-    return new Matrix(a.rows, a.cols)
-      .F((_, i, j) => a.data[i][j] - b.data[i][j]);
+    return new Matrix(a.rows, a.cols).F((_, i, j) => a.data[i][j] - b.data[i][j]);
   }
 
-  toArray() {
-    let arr = [];
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.cols; j++) {
-        arr.push(this.data[i][j]);
-      }
-    }
-    return arr;
+  // toArray
+  Y() {
+    return this.data.flat();
   }
 
-  randomize() {
+  R() {
     return this.F(e => Math.random() * 2 - 1);
   }
 
@@ -44,8 +39,7 @@ class Matrix {
   }
 
   static T(matrix) {
-    return new Matrix(matrix.cols, matrix.rows)
-      .F((_, i, j) => matrix.data[j][i]);
+    return new Matrix(matrix.cols, matrix.rows).F((_, i, j) => matrix.data[j][i]);
   }
 
   static D(a, b) {
@@ -83,29 +77,26 @@ class Matrix {
 
   static F(matrix, func) {
     // Apply a function to every element of matrix
-    return new Matrix(matrix.rows, matrix.cols)
-      .F((e, i, j) => func(matrix.data[i][j], i, j));
+    return new Matrix(matrix.rows, matrix.cols).F((e, i, j) => func(matrix.data[i][j], i, j));
   }
 }
 
 
 // Init
 I = (i, h, o) => {
-  W = new Matrix(h, i);
-  w = new Matrix(o, h);
-  W.randomize();
-  w.randomize();
+  W = new Matrix(h, i).R();
+  w = new Matrix(o, h).R();
 }
 
 // Predict
 P = (i) => {
-  h = Matrix.D(W, i = Matrix.fromArray(i)).F(f);
-  return Matrix.D(w, h).F(f).toArray();
+  h = Matrix.D(W, i = Matrix.Z(i)).F(f);
+  return Matrix.D(w, h).F(f).Y();
 }
 
 // Train
 TR = (i, t, o, oe) => {
-  h = Matrix.D(W, i = Matrix.fromArray(i)).F(f);
-  w.A(Matrix.D(Matrix.F(o = Matrix.D(w, h).F(f), g).M(oe = Matrix.S(Matrix.fromArray(t), o)).M(l), Matrix.T(h)));
+  h = Matrix.D(W, i = Matrix.Z(i)).F(f);
+  w.A(Matrix.D(Matrix.F(o = Matrix.D(w, h).F(f), g).M(oe = Matrix.S(Matrix.Z(t), o)).M(l), Matrix.T(h)));
   W.A(Matrix.D(Matrix.F(h, g).M(Matrix.D(Matrix.T(w), oe)).M(l), Matrix.T(i)));
 }
