@@ -1,14 +1,14 @@
-﻿M=(O,a=1,l)=>Array(O).fill().map(_=>Array(a).fill(l?0:Math.random()-1)),O=(O,a,l,f=l>5&&M(O.length,a[0].length,1),m)=>(O.map((O,M)=>{O.map((p,r)=>{m=a[M]?.[r],l>5?a[0].map((O,l)=>f[M][l]+=p*a[r][l]):O[r]=l>3?a(p):l>2?p*a:l>1?p*m:l?p-m:p+m})}),l>5?f:O),i=(O,a,l)=>{w=M(a,O),W=M(l,a),b=M(a),B=M(l)},p=(a,M,m,p)=>(p=O(O(O(W,O(O(m=O(w,a,6),b),f,4),6),B),f,4),M&&(O(M,p,1),O(W,O(p=O(O(O(p,g,4),M,2),l,3),[m.flat()],6)),O(B,p),O(w,O(m=O(O(O(m,g,4),O(W[0].map(O=>[O]),M,6),2),l,3),[a.flat()],6)),O(b,m)),p)
+﻿f=t=>1/(1+Math.exp(-t)),g=t=>t*(1-t),l=.2;class t{constructor(t,s){this.rows=t,this.cols=s,this.data=Array(this.rows).fill().map((()=>Array(this.cols).fill(0)))}copy(){let s=new t(this.rows,this.cols);for(let t=0;t<this.rows;t++)for(let o=0;o<this.cols;o++)s.data[t][o]=this.data[t][o];return s}static fromArray(s){return new t(s.length,1).map(((t,o)=>s[o]))}static subtract(s,o){if(s.rows===o.rows&&s.cols===o.cols)return new t(s.rows,s.cols).map(((t,i,a)=>s.data[i][a]-o.data[i][a]));console.log("Columns and Rows of A must match Columns and Rows of B.")}toArray(){let t=[];for(let s=0;s<this.rows;s++)for(let o=0;o<this.cols;o++)t.push(this.data[s][o]);return t}randomize(){return this.map((t=>2*Math.random()-1))}add(s){return s instanceof t?this.rows!==s.rows||this.cols!==s.cols?void console.log("Columns and Rows of A must match Columns and Rows of B."):this.map(((t,o,i)=>t+s.data[o][i])):this.map((t=>t+s))}static transpose(s){return new t(s.cols,s.rows).map(((t,o,i)=>s.data[i][o]))}static multiply(s,o){if(s.cols===o.rows)return new t(s.rows,o.cols).map(((t,i,a)=>{let r=0;for(let t=0;t<s.cols;t++)r+=s.data[i][t]*o.data[t][a];return r}));console.log("Columns of A must match rows of B.")}multiply(s){return s instanceof t?this.rows!==s.rows||this.cols!==s.cols?void console.log("Columns and Rows of A must match Columns and Rows of B."):this.map(((t,o,i)=>t*s.data[o][i])):this.map((t=>t*s))}map(t){for(let s=0;s<this.rows;s++)for(let o=0;o<this.cols;o++){let i=this.data[s][o];this.data[s][o]=t(i,s,o)}return this}static map(s,o){return new t(s.rows,s.cols).map(((t,i,a)=>o(s.data[i][a],i,a)))}}class NeuralNetwork{constructor(s,o,i){this.input_nodes=s,this.hidden_nodes=o,this.output_nodes=i,this.weights_ih=new t(this.hidden_nodes,this.input_nodes),this.weights_ho=new t(this.output_nodes,this.hidden_nodes),this.weights_ih.randomize(),this.weights_ho.randomize()}predict(s){let o=t.fromArray(s),i=t.multiply(this.weights_ih,o);i.map(f);let a=t.multiply(this.weights_ho,i);return a.map(f),a.toArray()}train(s,o){let i=t.fromArray(s),a=t.multiply(this.weights_ih,i);a.map(f);let r=t.multiply(this.weights_ho,a);r.map(f);let l=t.fromArray(o),e=t.subtract(l,r),h=t.map(r,g);h.multiply(e),h.multiply(.2);let n=t.transpose(a),m=t.multiply(h,n);this.weights_ho.add(m);let u=t.transpose(this.weights_ho),d=t.multiply(u,e),w=t.map(a,g);w.multiply(d),w.multiply(.2);let p=t.transpose(i),c=t.multiply(w,p);this.weights_ih.add(c)}}
 
 
 // Customization
 // =============
 
 // Learning rate
-l = 0.3;
+l = 0.2;
 
 // Activation function (sigmoid)
-f = (x => 1 / (1 + Math.E**-x));
+f = x => 1 / (1 + Math.E ** -x);
 
 // Gradient descent function
-g = (y => y * (1 - y));
+g = x => x * (1 - x);
