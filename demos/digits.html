@@ -58,7 +58,7 @@ train.onclick = () => {
     
       target = Array(10).fill(0.01);
       target[samples[kk].label] = 0.99;
-    P(samples[kk].image.map(z=> (z / 255.0 * 0.99) + 0.01), target);
+    P([samples[kk].image.map(z=> (z / 255.0 * 0.99) + 0.01)], [target]);
       kk++;
     }
     progress.innerHTML = "Training: "+kk+"/60000";
@@ -86,8 +86,8 @@ function findMax(arr) {
 guess.onclick = () => {
   correct = 0;
   for(zzz = 0; zzz < 10000; zzz++){
-    yyy = P(mnist_test[zzz].image.map(z=> (z / 255.0 * 0.99) + 0.01));
-    guess = findMax(yyy);
+    yyy = P([mnist_test[zzz].image.map(z=> (z / 255.0 * 0.99) + 0.01)]);
+    guess = findMax(yyy.flat());
     if(guess == mnist_test[zzz].label) correct ++;
   }
   corrects.innerHTML = "Correct: " + correct + "/10000 (" + (correct/100) + "% accuracy)";
