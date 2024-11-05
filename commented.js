@@ -57,13 +57,11 @@ I = (i, h, o) => {
 // P(input, target) // train
 // P(input) // query
 P = (i, t, o, oe) => {
-  i = C(i);
-  o = F(D(w, h = F(D(W, i), f)), f);
+  o = F(D(w, h = F(D(W, i = C(i)), f)), f);
   
   if(t){
-    t = C(t);
     S(t, o);
-    A(w, D(Z(pr(F(o, g), t), l), T(h)));
+    A(w, D(Z(pr(F(o, g), t = C(t)), l), T(h)));
     A(W, D(Z(pr(F(h, g), D(T(w), t)), l), T(i)));
   }
   return o.flat();
