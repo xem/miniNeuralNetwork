@@ -32,13 +32,14 @@ O = (a, b, o, r = a, i, j, k, l = "length", z) => {
         }
       }
       else {
-        z = a[i]?.[j];
+        k = a[i]?.[j];
+        z = b?.[i]?.[j];
         r[i][j] =
-        (o > 4) ? b(z) // map
-        : (o > 3) ? z * b // scale
-        : (o > 2) ? z * b[i][j] // mul
-        : (o > 1) ? z - b[i][j] // sub
-        : o ? z + b[i][j] // add
+        (o > 4) ? b(k) // map
+        : (o > 3) ? k * b // scale
+        : (o > 2) ? k * z // mul
+        : (o > 1) ? k - z // sub
+        : o ? k + z // add
         : a[j][i]; // transpose
       }
     }
