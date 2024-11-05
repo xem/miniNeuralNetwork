@@ -3,20 +3,28 @@
 <p id=loading>Loading...</p>
 <div id=loaded style="display: none">
 <hr>
-<p>1) Train a network with 60000 handwritten digits
+<p>1) Train a network with 60000 handwritten digits (mnist_train dataset)
 <p>(Hidden nodes: 100, learning rate: 0.2)
-<p><button id=train>TRAIN</button><!-- or <button id=load>LOAD a pre-trained network (faster)</button>-->
+<p><button id=train>TRAIN</button> <button id=stopb>STOP</button>
 <p><canvas id=c width=112 height=112 style="background: #000"></canvas>
-<p id=progress>Training: 0/60000</p>
+<p id=progress>Training: 0 / 60000</p>
 
 <hr>
 
-<p>2) Try to guess 10000 new digits
+<p>2) Try to guess 10000 new digits (mnist_test dataset)
 <p><button id=guess>GUESS</button>
-<p id=corrects>Correct: ?/10000</p>
+<p id=corrects>Correct: ????? / 10000</p>
+
+<hr>
+
+<p>3) Draw your own digit
+<p><canvas id=c2 width=112 height=112 style="background: #000"></canvas>
+<p><button id=clear>CLEAR</button>
+<p id=drawguessp>Guess: ??
+
 </div>
 
-<script src="../commented.js"></script>
+<script src="../min.js"></script>
 <script src="mnist_train_part_1.js"></script>
 <script src="mnist_train_part_2.js"></script>
 <script src="mnist_test.js"></script>
@@ -24,6 +32,7 @@
 <script>
 samples = [...mnist_train_part_1, ...mnist_train_part_2];
 x = c.getContext("2d");
+x2 = c2.getContext("2d");
 
 // Onload
 onload = () => {
@@ -61,14 +70,19 @@ train.onclick = () => {
     P([samples[kk].image.map(z=> (z / 255.0 * 0.99) + 0.01)], [target]);
       kk++;
     }
-    progress.innerHTML = "Training: "+kk+"/60000";
-    if(kk >= 1000){
+    progress.innerHTML = "Training: "+kk+" / 60000";
+    if(kk >= 60000){
       clearInterval(interval);
       train.removeAttribute("disabled");
       train.innerHTML = "TRAIN AGAIN (optional)";
     }
   },1);
   
+}
+
+stopb.onclick = () => {
+  clearInterval(interval);
+  train.removeAttribute("disabled");
 }
 
 function findMax(arr) {
@@ -90,7 +104,26 @@ guess.onclick = () => {
     guess = findMax(yyy.flat());
     if(guess == mnist_test[zzz].label) correct ++;
   }
-  corrects.innerHTML = "Correct: " + correct + "/10000 (" + (correct/100) + "% accuracy)";
+  corrects.innerHTML = "Correct: " + correct + " / 10000 (" + (correct/100) + "% accuracy)";
+}
+
+drawdata = Array(784).fill(0);
+clear.onclick = () => {
+  c2.width ^= 0;
+  drawdata = Array(784).fill(0);
+}
+
+md = 0;
+onmousedown = onmouseup = () => md = 1 - md;
+c2.onmousemove = (e) => {
+  x2.fillStyle = "#fff";
+  if(md){
+    x2.fillRect(e.offsetX&0b1111111100, e.offsetY&0b1111111100, 4, 4);
+    drawdata[Math.floor(e.offsetY/4) * 28 + Math.floor(e.offsetX/4)] = 1;
+    drawout = P([drawdata.map(z=> (z / 1 * 0.99) + 0.01)]);
+    drawguess = findMax(drawout.flat());
+    drawguessp.innerHTML = "Guess: " + drawguess;
+  }
 }
 
 </script>
