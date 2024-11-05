@@ -62,7 +62,7 @@ train.onclick = () => {
       kk++;
     }
     progress.innerHTML = "Training: "+kk+"/60000";
-    if(kk >= 60000){
+    if(kk >= 1000){
       clearInterval(interval);
       train.removeAttribute("disabled");
       train.innerHTML = "TRAIN AGAIN (optional)";
