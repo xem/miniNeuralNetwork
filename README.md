@@ -73,7 +73,7 @@ p([[1,1]]) // 0.01...
 
 ## Sources
 
-- This repo (3kb minified): https://github.com/CodingTrain/Toy-Neural-Network-JS/tree/master?tab=readme-ov-file
+- This repo (3kb minified): https://github.com/CodingTrain/Toy-Neural-Network-JS/tree/master
 - This book: https://www.amazon.fr/Make-Your-Own-Neural-Network/dp/1530826608/
 - This database: https://github.com/lorenmh/mnist_handwritten_json
 
