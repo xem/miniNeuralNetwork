@@ -7,12 +7,11 @@ g = x => x * (1 - x);
 // Learning rate
 l = 0.2;
 
-// Matrix
-M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(0));
-
 // Columnize ([1,2] => [[1],[2]])
 C = a => a.map(z=>[z]);
 
+// Matrix
+M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(0));
 
 // Operations on matrices
 // o === 0 (default): transpose (a.T)
@@ -22,35 +21,38 @@ C = a => a.map(z=>[z]);
 // o === 4: scale (a*b)
 // o === 5: map (b(a))
 // o === 6: dot (a.b)
-O = (a, b, o, r = a, i, j, k) => {
-  if(!o) r = M(a[0].length, a.length);
-  if(o === 6) r = M(a.length, b[0].length);
-  r.map((z,i)=>{
-    r[i].map((y,j)=>{
+O = (a, b, o, r = a, i, j, k, l = "length", z) => {
+  if(!o) r = M(a[0][l], a[l], 1);
+  if(o > 5) r = M(a[l], b[0][l], 1);
+  for(i = r[l]; i--;){
+    for(j = r[0][l]; j--;){
       if(o > 5){
-        a[0].map((x,k)=>{
+        for(k = a[0][l];k--;){
           r[i][j] += a[i][k] * b[k][j]; // dot
-        })
+        }
       }
-      else r[i][j] =
-        (o > 4) ? b(a[i][j]) // map
-        : (o > 3) ? a[i][j] * b // scale
-        : (o > 2) ? a[i][j] * b[i][j] // mul
-        : (o > 1) ? a[i][j] - b[i][j] // sub
-        : (o) ? a[i][j] + b[i][j] // add
+      else {
+        z = a[i]?.[j];
+        r[i][j] =
+        (o > 4) ? b(z) // map
+        : (o > 3) ? z * b // scale
+        : (o > 2) ? z * b[i][j] // mul
+        : (o > 1) ? z - b[i][j] // sub
+        : o ? z + b[i][j] // add
         : a[j][i]; // transpose
-    })
-  })
+      }
+    }
+  }
   return r;
 }
 
 // Randomize
-R = (a, b, i, j) => { for(i in a) for(j in a[i]) a[i][j] = Math.random() * 2 - 1; return a; }
+R = a => O(a, z=>Math.random()*2-1, 5);
 
 // Init
 I = (i, h, o) => {
-  R(W = M(h, i));
-  R(w = M(o, h));
+  W = R(M(h, i));
+  w = R(M(o, h));
 }
 
 // Passthrough
