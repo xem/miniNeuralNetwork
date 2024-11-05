@@ -11,7 +11,7 @@ l = 0.2;
 C = a => a.map(z=>[z]);
 
 // Matrix
-M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(0));
+M = (r, c, z) => Array(r).fill().map(() => Array(c).fill().map(x=>z?0:Math.random()*2-1));
 
 // Operations on matrices
 // o === 0 (default): transpose (a.T)
@@ -22,7 +22,7 @@ M = (r, c, z) => Array(r).fill().map(() => Array(c).fill(0));
 // o === 5: map (b(a))
 // o === 6: dot (a.b)
 O = (a, b, o, r = a, i, j, k, l = "length", z) => {
-  if(!o) r = M(a[0][l], a[l], 1);
+  if(!o) r = M(a[0][l], a[l]);
   if(o > 5) r = M(a[l], b[0][l], 1);
   for(i = r[l]; i--;){
     for(j = r[0][l]; j--;){
@@ -47,13 +47,10 @@ O = (a, b, o, r = a, i, j, k, l = "length", z) => {
   return r;
 }
 
-// Randomize
-R = a => O(a, z=>Math.random()*2-1, 5);
-
 // Init
 I = (i, h, o) => {
-  W = R(M(h, i));
-  w = R(M(o, h));
+  W = M(h, i);
+  w = M(o, h);
 }
 
 // Passthrough
