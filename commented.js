@@ -18,7 +18,7 @@ M = (r, c, z) => Array(r).fill().map(() => Array(c).fill().map(x => z ?? Math.ra
 // o === 4: scale (a*b)
 // o === 5: map (b(a))
 // o === 6: dot (a.b)
-O = (a, b, o, r = a, i, j, k, l = "length") => {
+O = (a, b, o, r = a, i, j, k, l = "length", z) => {
   if(!o) r = M(a[0][l], a[l]);
   if(o > 5) r = M(a[l], b[0][l], 0);
   for(i = r[l]; i--;){
@@ -29,13 +29,11 @@ O = (a, b, o, r = a, i, j, k, l = "length") => {
       }
       else {
         k = a[i]?.[j];
-        l = b?.[i]?.[j];
+        z = b?.[i]?.[j];
         r[i][j] =
         (o > 4) ? b(k) // map
         : (o > 3) ? k * b // scale
-        : (o > 2) ? k * l // mul
-        : (o > 1) ? k - l // sub
-        : o ? k + l // add
+        : o ? [,k+z,k-z,k*z][o] // +, -, *
         : a[j][i]; // transpose
       }
     }
