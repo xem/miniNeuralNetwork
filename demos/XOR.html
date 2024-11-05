@@ -1,27 +1,27 @@
 ﻿<body id=body>
 <h2>XOR demo</h2>
-<script src=../min.js></script>
+<script src=../commented.js></script>
 <script>
 // Demo
-i(2,3,1);
+I(2,3,1);
 
 body.innerHTML += "<p>Before training...";
-body.innerHTML += '<br>0 XOR 0: '+p([[0],[0]])[0][0];
-body.innerHTML += '<br>0 XOR 1: '+p([[0],[1]])[0][0];
-body.innerHTML += '<br>1 XOR 0: '+p([[1],[0]])[0][0];
-body.innerHTML += '<br>1 XOR 1: '+p([[1],[1]])[0][0];
+body.innerHTML += '<br>0 XOR 0: '+P([[0,0]])
+body.innerHTML += '<br>0 XOR 1: '+P([[0,1]]);
+body.innerHTML += '<br>1 XOR 0: '+P([[1,0]]);
+body.innerHTML += '<br>1 XOR 1: '+P([[1,1]]);
 
 // several training epochs
 for(i = 0; i < 50000; i++){
-  p([[0],[0]], [[0]])
-  p([[1],[0]], [[1]])
-  p([[0],[1]], [[1]])
-  p([[1],[1]], [[0]])
+  P([[0,0]], [[0]])
+  P([[1,0]], [[1]])
+  P([[0,1]], [[1]])
+  P([[1,1]], [[0]])
 }
 
 body.innerHTML += "<p>After training...";
-body.innerHTML += '<br>0 XOR 0: '+p([[0],[0]])[0][0];
-body.innerHTML += '<br>0 XOR 1: <b>'+p([[0],[1]])[0][0];
-body.innerHTML += '<br>1 XOR 0: <b>'+p([[1],[0]])[0][0];
-body.innerHTML += '<br>1 XOR 1: '+p([[1],[1]])[0][0];
+body.innerHTML += '<br>0 XOR 0: '+P([[0,0]]);
+body.innerHTML += '<br>0 XOR 1: <b>'+P([[0,1]]);
+body.innerHTML += '<br>1 XOR 0: <b>'+P([[1,0]]);
+body.innerHTML += '<br>1 XOR 1: '+P([[1,1]]);
 </script>
