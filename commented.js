@@ -27,17 +27,18 @@ O = (a, b, o, r = a, i, j, k) => {
   if(o === 6) r = M(a.length, b[0].length);
   r.map((z,i)=>{
     r[i].map((y,j)=>{
-      if(!o) r[i][j] = a[j][i]; // transpose
-      if(o === 1) a[i][j] += b[i][j]; // add
-      if(o === 2) a[i][j] -= b[i][j]; // sub
-      if(o === 3) a[i][j] *= b[i][j]; // mul
-      if(o === 4) a[i][j] *= b; // scale
-      if(o === 5) a[i][j] = b(a[i][j]) // map
-      if(o === 6){
+      if(o > 5){
         a[0].map((x,k)=>{
           r[i][j] += a[i][k] * b[k][j]; // dot
         })
       }
+      else r[i][j] =
+        (o > 4) ? b(a[i][j]) // map
+        : (o > 3) ? a[i][j] * b // scale
+        : (o > 2) ? a[i][j] * b[i][j] // mul
+        : (o > 1) ? a[i][j] - b[i][j] // sub
+        : (o) ? a[i][j] + b[i][j] // add
+        : a[j][i]; // transpose
     })
   })
   return r;
