@@ -23,19 +23,17 @@ O = (a, b, o, r = a, i, j, k, l = "length", z) => {
   if(o > 5) r = M(a[l], b[0][l], 0);
   for(i = r[l]; i--;){
     for(j = r[0][l]; j--;){
-      if(o > 5){
-        for(k = a[0][l]; k--;)
-          r[i][j] += a[i][k] * b[k][j]; // dot
-      }
-      else {
-        k = a[i]?.[j];
-        z = b?.[i]?.[j];
+      o > 5 
+      ? a[0].map((_,k)=> r[i][j] += a[i][k] * b[k][j]) // dot
+      : (
+        k = a[i]?.[j],
+        z = b?.[i]?.[j],
         r[i][j] =
         (o > 4) ? b(k) // map
         : (o > 3) ? k * b // scale
         : o ? [,k+z,k-z,k*z][o] // +, -, *
-        : a[j][i]; // transpose
-      }
+        : a[j][i] // transpose
+      )
     }
   }
   return r;
