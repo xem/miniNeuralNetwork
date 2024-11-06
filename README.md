@@ -36,7 +36,7 @@ g = (y => y * (1 - y));
 // Init (input_nodes, hidden_nodes, output_nodes)
 // ==============================================
 
-i(2, 10, 1);
+I(2, 10, 1);
 ```
 
 - Train the network by passing input data and target output through the `P` passthrough function (many times):
@@ -60,8 +60,8 @@ for(i = 0; i < 50000; i++){ // Ex: XOR network
 // Query (input)
 // =============
 
-p([[1],[0]]) // 0.99...
-p([[1],[1]]) // 0.01...
+P([[1],[0]]) // 0.99...
+P([[1],[1]]) // 0.01...
 ```
 
 ## Demos
