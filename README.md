@@ -1,16 +1,15 @@
 ﻿# MiniNeuralNetwork
 
-A fast and tiny artificial neural network in JavaScript!
+A fast and tiny artificial neural network in JavaScript in less than 512 bytes!
 
 ```js
-M=(O,r,f)=>Array(O).fill().map(()=>Array(r).fill().map(O=>f??2*Math.
-random()-1)),O=(O,r,f,l=O,a,h,e,o="length",w)=>{for(f||(l=M(O[0][o],
-O[o])),f>5&&(l=M(O[o],r[0][o],0)),a=l[o];a--;)for(h=l[0][o];h--;)if(
-f>5)for(e=O[0][o];e--;)l[a][h]+=O[a][e]*r[e][h];else e=O[a]?.[h],w=r
-?.[a]?.[h],l[a][h]=f>4?r(e):f>3?e*r:f>2?e*w:f>1?e-w:f?e+w:O[h][a];
-return l},I=(O,r,f)=>{W=M(r,O),w=M(f,r)},P=(r,a,M)=>(M=O(O(w,h=O(O(W
-,r=O(r),6),f,5),6),f,5),a&&(O(a=O(a),M,2),O(w,O(O(O(O(M,g,5),a,3),l,
-4),O(h),6),1),O(W,O(O(O(O(h,g,5),O(O(w),a,6),3),l,4),O(r),6),1)),M)
+M=(O,a,l)=>Array(O).fill().map(O=>Array(a).fill().map(O=>l??2*Math.random
+()-1)),O=(O,a,l,m=O,h,p,r,f="length",w)=>(l||(m=M(O[0][f],O[f])),l>5&&(m=
+M(O[f],a[0][f],0)),m.map((M,h)=>{m[0].map((M,p)=>{l>5?O[0].map((l,M)=>m[h
+][p]+=O[h][M]*a[M][p]):(r=O[h]?.[p],w=a?.[h]?.[p],m[h][p]=l>4?a(r):l>3?r*
+a:l?[,r+w,r-w,r*w][l]:O[p][h])})}),m),I=(O,a,l)=>{W=M(a,O),w=M(l,a)},P=(a
+,m,M=O(O(w,h=O(O(W,a,6),f,5),6),f,5))=>(m&&(O(m,M,2),O(w,O(O(O(O(M,g,5),m
+,3),l,4),O(h),6),1),O(W,O(O(O(O(h,g,5),O(O(w),m,6),3),l,4),O(a),6),1)),M)
 ```
 
 ## How to use it?
@@ -37,7 +36,7 @@ g = (y => y * (1 - y));
 // Init (input_nodes, hidden_nodes, output_nodes)
 // ==============================================
 
-i(2, 3, 1);
+i(2, 10, 1);
 ```
 
 - Train the network by passing input data and target output through the `P` passthrough function (many times):
@@ -46,11 +45,11 @@ i(2, 3, 1);
 // Train (input, target)
 // =====================
 
-for(i = 0; i < 10000; i++){
-  P([[0,0]], [[0]])
-  P([[1,0]], [[1]])
-  P([[0,1]], [[1]])
-  P([[1,1]], [[0]])
+for(i = 0; i < 50000; i++){ // Ex: XOR network
+  P([[0],[0]], [[0]])
+  P([[1],[0]], [[1]])
+  P([[0],[1]], [[1]])
+  P([[1],[1]], [[0]])
 }
 ```
 
@@ -61,8 +60,8 @@ for(i = 0; i < 10000; i++){
 // Query (input)
 // =============
 
-p([[1,0]]) // 0.99...
-p([[1,1]]) // 0.01...
+p([[1],[0]]) // 0.99...
+p([[1],[1]]) // 0.01...
 ```
 
 ## Demos

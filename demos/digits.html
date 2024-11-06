@@ -51,7 +51,7 @@ train.onclick = () => {
   kk = 0;
   
   interval = setInterval(()=>{
-    for(ll = 0; ll < 20; ll++){
+    for(ll = 0; ll < 10; ll++){
       if(ll == 0){
         c.width ^= 0;
         for(ii = 28; ii--;){
@@ -67,7 +67,7 @@ train.onclick = () => {
     
       target = Array(10).fill(0.01);
       target[samples[kk].label] = 0.99;
-    P([samples[kk].image.map(z=> (z / 255.0 * 0.99) + 0.01)], [target]);
+      P(O([samples[kk].image.map(z=> (z / 255.0 * 0.99) + 0.01)]), O([target]));
       kk++;
     }
     progress.innerHTML = "Training: "+kk+" / 60000";
@@ -100,7 +100,7 @@ function findMax(arr) {
 guess.onclick = () => {
   correct = 0;
   for(zzz = 0; zzz < 10000; zzz++){
-    yyy = P([mnist_test[zzz].image.map(z=> (z / 255.0 * 0.99) + 0.01)]);
+    yyy = P(O([mnist_test[zzz].image.map(z=> (z / 255.0 * 0.99) + 0.01)]));
     guess = findMax(yyy.flat());
     if(guess == mnist_test[zzz].label) correct ++;
   }
@@ -120,7 +120,7 @@ c2.onmousemove = (e) => {
   if(md){
     x2.fillRect(e.offsetX&0b1111111100, e.offsetY&0b1111111100, 4, 4);
     drawdata[Math.floor(e.offsetY/4) * 28 + Math.floor(e.offsetX/4)] = 1;
-    drawout = P([drawdata.map(z=> (z / 1 * 0.99) + 0.01)]);
+    drawout = P(O([drawdata.map(z=> (z / 1 * 0.99) + 0.01)]));
     drawguess = findMax(drawout.flat());
     drawguessp.innerHTML = "Guess: " + drawguess;
   }

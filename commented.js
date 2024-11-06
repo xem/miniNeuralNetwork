@@ -21,8 +21,8 @@ M = (r, c, z) => Array(r).fill().map(_ => Array(c).fill().map(x => z ?? Math.ran
 O = (a, b, o, r = a, i, j, k, l = "length", z) => {
   if(!o) r = M(a[0][l], a[l]);
   if(o > 5) r = M(a[l], b[0][l], 0);
-  for(i = r[l]; i--;){
-    for(j = r[0][l]; j--;){
+  r.map((x,i)=>{
+    r[0].map((y,j)=>{
       o > 5 
       ? a[0].map((_,k)=> r[i][j] += a[i][k] * b[k][j]) // dot
       : (
@@ -34,8 +34,8 @@ O = (a, b, o, r = a, i, j, k, l = "length", z) => {
         : o ? [,k+z,k-z,k*z][o] // +, -, *
         : a[j][i] // transpose
       )
-    }
-  }
+    })
+  })
   return r;
 }
 
@@ -46,10 +46,9 @@ I = (i, h, o) => {
 }
 
 // Passthrough: P(input, target) for training, P(input) for prediction
-P = (i, t, o) => {
-  o = O(O(w, h = O(O(W, i = O(i), 6), f, 5), 6), f, 5);
+P = (i, t, o = O(O(w, h = O(O(W, i, 6), f, 5), 6), f, 5)) => {
   if(t){
-    O(t = O(t), o, 2);
+    O(t, o, 2);
     O(w, O(O(O(O(o, g, 5), t, 3), l, 4), O(h), 6), 1);
     O(W, O(O(O(O(h, g, 5), O(O(w), t, 6), 3), l, 4), O(i), 6), 1);
   }
