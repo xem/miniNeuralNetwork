@@ -31,7 +31,7 @@ O = (a, b, o, r = a, i, j, k, l = "length", z) => {
         r[i][j] =
         (o > 4) ? b(k) // map
         : (o > 3) ? k * b // scale
-        : o ? [,k+z,k-z,k*z][o] // +, -, *
+        : o ? [, k+z, k-z, k*z][o] // +, -, *
         : a[j][i] // transpose
       )
     })
