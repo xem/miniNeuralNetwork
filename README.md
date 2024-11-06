@@ -78,4 +78,4 @@ p([[1],[1]]) // 0.01...
 
 ## Credits
 
-Golfed by @MaximeEuziere and @JohnMeuser
+Golfed by @MaximeEuziere, @JohnMeuser, @IrratixMusic 
