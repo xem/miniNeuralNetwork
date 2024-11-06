@@ -8,7 +8,7 @@ g = x => x * (1 - x);
 l = 0.2;
 
 // Matrix creation
-M = (r, c, z) => Array(r).fill().map(() => Array(c).fill().map(x => z ?? Math.random() * 2 - 1));
+M = (r, c, z) => Array(r).fill().map(_ => Array(c).fill().map(x => z ?? Math.random() * 2 - 1));
 
 // Operations on matrices
 // o === 0 (default): transpose (a.T)
